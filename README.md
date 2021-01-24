@@ -29,25 +29,25 @@ The `v` object now has a property structure like:
 
 ```sh
 v
-|- isInvalid
-|- hasErrors
-|- errors
-|- groups
-|   |- isInvalid
-|   |- hasErrors
-|   |- errors
-|- name
-|   |- isInvalid
-|   |- isDirty
-|   |- hasErrors
-|   |- errors
-|   L  model
-L  address
-    |- isInvalid
-    |- isDirty
-    |- hasErrors
-    |- errors
-    L  model
++---isInvalid
++---hasErrors
++---errors
++---groups
+|   +---isInvalid
+|   +---hasErrors
+|   \---errors
++---name
+|   +---isInvalid
+|   +---isDirty
+|   +---hasErrors
+|   +---errors
+|   \--- model
+\---address
+    +---isInvalid
+    +---isDirty
+    +---hasErrors
+    +---errors
+    \---model
 ```
 
 And each of the branches also has a `validate()` method that returns a `Promise<boolean>`.
