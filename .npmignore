@@ -1,0 +1,13 @@
+.vscode/**
+.git
+node_modules/**
+src/**
+tests/**
+.env
+.prettierrc
+.gitignore
+japaFile.js
+tsconfig.json
+nodemon.json
+yarn.lock
+yarn-error.log
