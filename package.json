@@ -1,6 +1,6 @@
 {
   "name": "@fjsolutions/vue-validator",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A simple validation framework for Vue 3, inspired by Vuelidate",
   "main": "index.js",
   "author": "Francis Judge <fjudge7@gmail.com>",
