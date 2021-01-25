@@ -101,11 +101,11 @@ export class Validator<T, G> implements IValidator<T, G> {
     let isValid = true
 
     for (let i = 0; i < this._validators.length; i++) {
-      const element = this._validators[i]
+      const propertyValidator = this._validators[i]
 
-      if (!(await element.validate())) {
+      if (!(await propertyValidator.validate(false))) {
         isValid = false
-        this._errors.push(...element.errors)
+        this._errors.push(...propertyValidator.errors)
       }
     }
 
@@ -125,7 +125,7 @@ export class PropertyValidator<T extends Ref, M> implements IPropertyValidator<T
   private _hasErrors = ref(false)
   private _errors = new Array<ValidationError>()
   private _proxy: any
-  private _lastValue?: T
+  private _lastValue?: any
   private _propertyName: string
   private _rules: { [key: string]: RuleValidator<T> }
   private _model: M
@@ -143,6 +143,7 @@ export class PropertyValidator<T extends Ref, M> implements IPropertyValidator<T
     const self = this
     this._proxy = new Proxy(propertyModel, {
       set: function (target, prop, value, receiver) {
+        // NB: This ALWAYS comes through as a string from a control!
         // console.log('Proxy.set:', value)
 
         // Default behavior
@@ -155,7 +156,7 @@ export class PropertyValidator<T extends Ref, M> implements IPropertyValidator<T
     })
   }
 
-  private setPropertyValue(newValue: T) {
+  private setPropertyValue(newValue: any) {
     if (newValue !== this._lastValue) {
       this._lastValue = newValue
       this._isDirty.value = true
@@ -187,7 +188,11 @@ export class PropertyValidator<T extends Ref, M> implements IPropertyValidator<T
     return this._proxy
   }
 
-  public async validate() {
+  public async validate(skipDirty = true) {
+    if (!skipDirty && this._isDirty.value) {
+      return Promise.resolve(!this._isInvalid.value)
+    }
+
     this._errors.length = 0
 
     if (!this._rules) {
@@ -200,7 +205,7 @@ export class PropertyValidator<T extends Ref, M> implements IPropertyValidator<T
     for (let i = 0; i < keys.length; i++) {
       const validator = this._rules[keys[i]]
 
-      if (!(await validator.validator(this.model.value, this._model))) {
+      if (!(await validator.validator(this._proxy.value, this._model))) {
         isValid = false
         this._errors.push({
           message: validator.message,
@@ -253,11 +258,11 @@ export class GroupValidator implements IRootValidator {
     let isValid = true
 
     for (let j = 0; j < this._propertyValidators.length; j++) {
-      const pv = this._propertyValidators[j]
+      const propertyValidator = this._propertyValidators[j]
 
-      if (!(await pv.validate())) {
+      if (!(await propertyValidator.validate(false))) {
         isValid = false
-        this._errors.push(...pv.errors)
+        this._errors.push(...propertyValidator.errors)
       }
     }
 

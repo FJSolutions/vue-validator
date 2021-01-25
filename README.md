@@ -6,6 +6,10 @@ Inspired by [Vuelidate](https://github.com/vuelidate/vuelidate) 2
 ## Usage
 
 ```ts
+import { ref } from 'vue'
+import { useValidator, Rules, GroupRules } from '@fjsolutions/vue-validator'
+import { required, minLength } from '@fjsolutions/vue-validator/dist/rules'
+
 // Object model
 const model = {
   name: ref(''),
@@ -68,14 +72,24 @@ And each of the branches also has a `validate()` method that returns a `Promise<
 - MaxValue
 - MinValue
 - ValueBetween
-
-### ToDo
-
-- IsAlpha
-- IsNumeric
-- IsAlphaNumeric
 - IsInteger
 - IsDecimal
+- IsNumeric
+- IsNumeric
+- IsAlpha
+- IsAlphaNumeric
+
+### Helper functions
+
+The following helper functions can be useful for creating a password rule
+
+- containsLowerCase
+- containsUpperCase
+- containsUpperOrLowerCase
+- containsDigit
+- containsSymbol
+
+### ToDo (Possibly)
 
 - RequiredIf
 - RequiredUnless

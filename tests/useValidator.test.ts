@@ -118,4 +118,15 @@ test.group('Basic usage of useValidator', () => {
     assert.exists(v.groups['group1'])
     assert.exists(v.groups['group2'])
   })
+
+  test('setting a "ref" with a string', assert => {
+    const age = ref(42)
+    // console.log(age)
+    assert.deepEqual(age.value, 42)
+
+    // @ts-ignore
+    age.value = '31415e-4'
+    // console.log(age)
+    assert.notDeepEqual(age.value, 3.1415)
+  })
 })
