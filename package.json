@@ -2,7 +2,8 @@
   "name": "@fjsolutions/vue-validator",
   "version": "0.2.1",
   "description": "A simple validation framework for Vue 3, inspired by Vuelidate",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "author": "Francis Judge <fjudge7@gmail.com>",
   "license": "MIT",
   "repository": {
