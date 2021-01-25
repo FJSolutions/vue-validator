@@ -12,7 +12,8 @@
   "scripts": {
     "test": "cls && nodemon japaFile.js",
     "build": "tsc",
-    "clean": " rm -f -r ./dist/"
+    "clean": " rm -f -r ./dist/",
+    "clean+build": "cls && yarn clean && yarn build"
   },
   "dependencies": {
     "japa": "^3.1.1",

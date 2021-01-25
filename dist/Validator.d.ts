@@ -91,7 +91,7 @@ export declare class PropertyValidator<T extends Ref, M> implements IPropertyVal
     get errors(): ValidationError[];
     get hasErrors(): Ref<boolean>;
     get model(): any;
-    validate(): Promise<boolean>;
+    validate(skipDirty?: boolean): Promise<boolean>;
 }
 export declare class GroupValidator implements IRootValidator {
     private _isInvalid;

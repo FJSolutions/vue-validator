@@ -2,7 +2,7 @@ import { Ref } from 'vue';
 /**
  * The signature of a validation function: `async` function that takes a value and validates it
  */
-export declare type ValidationFunction<T> = (value: T | Ref<T>, context?: {
+export declare type ValidationFunction<T> = (value: any | Ref<any>, context?: {
     [key: string]: any;
 }) => Promise<Boolean>;
 /**

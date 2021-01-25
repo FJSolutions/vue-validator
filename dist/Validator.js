@@ -48,10 +48,10 @@ class Validator {
             }
             let isValid = true;
             for (let i = 0; i < this._validators.length; i++) {
-                const element = this._validators[i];
-                if (!(yield element.validate())) {
+                const propertyValidator = this._validators[i];
+                if (!(yield propertyValidator.validate(false))) {
                     isValid = false;
-                    this._errors.push(...element.errors);
+                    this._errors.push(...propertyValidator.errors);
                 }
             }
             this._isInvalid.value = !isValid;
@@ -76,6 +76,7 @@ class PropertyValidator {
         const self = this;
         this._proxy = new Proxy(propertyModel, {
             set: function (target, prop, value, receiver) {
+                // NB: This ALWAYS comes through as a string from a control!
                 // console.log('Proxy.set:', value)
                 // Default behavior
                 target.value = value;
@@ -111,8 +112,11 @@ class PropertyValidator {
     get model() {
         return this._proxy;
     }
-    validate() {
+    validate(skipDirty = true) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!skipDirty && this._isDirty.value) {
+                return Promise.resolve(!this._isInvalid.value);
+            }
             this._errors.length = 0;
             if (!this._rules) {
                 this._isInvalid.value = false;
@@ -122,7 +126,7 @@ class PropertyValidator {
             const keys = Object.keys(this._rules);
             for (let i = 0; i < keys.length; i++) {
                 const validator = this._rules[keys[i]];
-                if (!(yield validator.validator(this.model.value, this._model))) {
+                if (!(yield validator.validator(this._proxy.value, this._model))) {
                     isValid = false;
                     this._errors.push({
                         message: validator.message,
@@ -166,10 +170,10 @@ class GroupValidator {
             }
             let isValid = true;
             for (let j = 0; j < this._propertyValidators.length; j++) {
-                const pv = this._propertyValidators[j];
-                if (!(yield pv.validate())) {
+                const propertyValidator = this._propertyValidators[j];
+                if (!(yield propertyValidator.validate(false))) {
                     isValid = false;
-                    this._errors.push(...pv.errors);
+                    this._errors.push(...propertyValidator.errors);
                 }
             }
             this._isInvalid.value = !isValid;
