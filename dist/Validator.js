@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,9 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.GroupValidator = exports.PropertyValidator = exports.Validator = void 0;
-const vue_1 = require("vue");
+import { ref } from 'vue';
 /*****************************************
  *
  * Validation classes
@@ -19,10 +16,10 @@ const vue_1 = require("vue");
 /**
  * The implementation of the root validator object
  */
-class Validator {
+export class Validator {
     constructor(validators, groupObject) {
-        this._isInvalid = vue_1.ref(false);
-        this._hasErrors = vue_1.ref(false);
+        this._isInvalid = ref(false);
+        this._hasErrors = ref(false);
         this._errors = new Array();
         this._validators = validators;
         this._groups = groupObject;
@@ -60,21 +57,23 @@ class Validator {
         });
     }
 }
-exports.Validator = Validator;
 /**
  * The implementation of a property validator
  */
-class PropertyValidator {
+export class PropertyValidator {
     constructor(propertyName, propertyModel, rules, model) {
-        this._isDirty = vue_1.ref(false);
-        this._isInvalid = vue_1.ref(false);
-        this._hasErrors = vue_1.ref(false);
+        this._isDirty = ref(false);
+        this._isInvalid = ref(false);
+        this._hasErrors = ref(false);
         this._errors = new Array();
         this._model = model;
         this._propertyName = propertyName;
         this._rules = rules;
         const self = this;
         this._proxy = new Proxy(propertyModel, {
+            get: function (target, prop, receiver) {
+                return target.value;
+            },
             set: function (target, prop, value, receiver) {
                 // NB: This ALWAYS comes through as a string from a control!
                 // console.log('Proxy.set:', value)
@@ -144,11 +143,10 @@ class PropertyValidator {
         });
     }
 }
-exports.PropertyValidator = PropertyValidator;
-class GroupValidator {
+export class GroupValidator {
     constructor(propertyValidators) {
-        this._isInvalid = vue_1.ref(false);
-        this._hasErrors = vue_1.ref(false);
+        this._isInvalid = ref(false);
+        this._hasErrors = ref(false);
         this._errors = new Array();
         this._propertyValidators = propertyValidators;
     }
@@ -182,4 +180,3 @@ class GroupValidator {
         });
     }
 }
-exports.GroupValidator = GroupValidator;

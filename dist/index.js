@@ -1,14 +1,11 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useValidator = void 0;
-const Validator_1 = require("./Validator");
+import { PropertyValidator, Validator, GroupValidator, } from './Validator';
 /**
  * Creates a validation object for the supplied model based on the supplied rules
  *
  * @param model The model object to validate
  * @param rules The object that defines the validations for a model
  */
-const useValidator = (model, rules) => {
+export const useValidator = (model, rules) => {
     // Get the property structure for the model
     const descriptors = Object.getOwnPropertyDescriptors(model);
     const modelKeys = Object.keys(descriptors);
@@ -30,7 +27,7 @@ const useValidator = (model, rules) => {
         // Find the property's rule validator
         const rule = (_a = Object.getOwnPropertyDescriptor(rules, key)) === null || _a === void 0 ? void 0 : _a.value;
         // Create a new property validator
-        const pv = new Validator_1.PropertyValidator(key, descriptors[key], rule, model);
+        const pv = new PropertyValidator(key, descriptors[key], rule, model);
         return pv;
     });
     // console.log(propertyValidators)
@@ -63,14 +60,14 @@ const useValidator = (model, rules) => {
             }
         });
         const group = Object.defineProperty(groupObject, gp.groupName, {
-            value: new Validator_1.GroupValidator(vRules),
+            value: new GroupValidator(vRules),
             enumerable: true,
             writable: false,
         });
     });
     // console.log('Group Object: ', groupObject)
     // Create the validation object and add the validation properties
-    const v = new Validator_1.Validator(propertyValidators, groupObject);
+    const v = new Validator(propertyValidators, groupObject);
     propertyValidators.forEach(pv => {
         // Add a property to the main validation object
         Object.defineProperty(v, pv.PropertyName, {
@@ -84,4 +81,3 @@ const useValidator = (model, rules) => {
     // console.log(ro.groups)
     return v;
 };
-exports.useValidator = useValidator;

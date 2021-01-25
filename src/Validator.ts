@@ -142,6 +142,9 @@ export class PropertyValidator<T extends Ref, M> implements IPropertyValidator<T
 
     const self = this
     this._proxy = new Proxy(propertyModel, {
+      get: function (target, prop, receiver) {
+        return target.value
+      },
       set: function (target, prop, value, receiver) {
         // NB: This ALWAYS comes through as a string from a control!
         // console.log('Proxy.set:', value)
