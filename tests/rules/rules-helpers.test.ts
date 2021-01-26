@@ -1,5 +1,10 @@
 import test from 'japa'
-import { containsDigit, containsLowerCase, containsSymbol, containsUpperCase } from '../src/rules'
+import {
+  containsDigit,
+  containsLowerCase,
+  containsSymbol,
+  containsUpperCase,
+} from '../../src/rules'
 
 test.group('Tests the helper functions that check the kind of content in a string value', () => {
   // Lower case checks

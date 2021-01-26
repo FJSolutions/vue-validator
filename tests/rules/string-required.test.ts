@@ -1,10 +1,10 @@
 import test from 'japa'
 import { ref } from 'vue'
-import { useValidator, Rules } from '../src'
-import { lengthBetween } from '../src/rules'
+import { useValidator, Rules } from '../../src'
+import { required } from '../../src/rules'
 
-test.group('Tests for the built-in "maxLength" validator', () => {
-  test('success test', async assert => {
+test.group('Tests for the built-in "required" validator', () => {
+  test('existing valid value succeeds', async assert => {
     // Object model
     const model = {
       name: ref('Francis'),
@@ -13,7 +13,7 @@ test.group('Tests for the built-in "maxLength" validator', () => {
     // Rules model
     const rules: Rules<typeof model> = {
       name: {
-        lengthBetween: lengthBetween(3, 10),
+        required,
       },
     }
     // Pass in the model and rules
@@ -27,16 +27,16 @@ test.group('Tests for the built-in "maxLength" validator', () => {
     assert.equal(v.name.errors.length, 0)
   })
 
-  test('failure test', async assert => {
+  test('existing invalid value fails', async assert => {
     // Object model
     const model = {
-      name: ref('Mo'),
+      name: ref(''),
       // address: ref(''),
     }
     // Rules model
     const rules: Rules<typeof model> = {
       name: {
-        lengthBetween: lengthBetween(3, 10),
+        required,
       },
     }
     // Pass in the model and rules

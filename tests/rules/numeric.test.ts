@@ -1,19 +1,19 @@
 import test, { skip } from 'japa'
 import { ref } from 'vue'
-import { useValidator, Rules } from '../src'
-import { decimal } from '../src/rules'
+import { useValidator, Rules } from '../../src'
+import { numeric } from '../../src/rules'
 
-test.group('Tests for the built-in "decimal" validator', () => {
+test.group('Tests for the built-in "numeric" validator', () => {
   test('success test', async assert => {
     // Object model
     const model = {
       name: ref('Mo'),
-      age: ref(55.5),
+      age: ref(55),
     }
     // Rules model
     const rules: Rules<typeof model> = {
       age: {
-        decimal,
+        numeric,
       },
     }
     // Pass in the model and rules
@@ -36,11 +36,11 @@ test.group('Tests for the built-in "decimal" validator', () => {
       age: ref(0.0),
     }
     // @ts-ignore
-    model.age = '55.6'
+    model.age = '55.5'
     // Rules model
     const rules: Rules<typeof model> = {
       age: {
-        decimal,
+        numeric,
       },
     }
     // Pass in the model and rules
@@ -60,13 +60,14 @@ test.group('Tests for the built-in "decimal" validator', () => {
     // Object model
     const model = {
       name: ref('Francis'),
-      age: ref(55),
-      // address: ref(''),
+      age: ref(0),
     }
+    // @ts-ignore
+    model.age = 'Cape'
     // Rules model
     const rules: Rules<typeof model> = {
       age: {
-        decimal,
+        numeric,
       },
     }
     // Pass in the model and rules
@@ -89,11 +90,11 @@ test.group('Tests for the built-in "decimal" validator', () => {
       age: ref(55),
     }
     // @ts-ignore
-    model.age = '54'
+    model.age = 'R123.4'
     // Rules model
     const rules: Rules<typeof model> = {
       age: {
-        decimal,
+        numeric,
       },
     }
     // Pass in the model and rules

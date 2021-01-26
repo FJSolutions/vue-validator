@@ -1,7 +1,7 @@
 import test from 'japa'
 import { ref } from 'vue'
-import { useValidator, Rules } from '../src'
-import { sameAs } from '../src/rules'
+import { useValidator, Rules } from '../../src'
+import { sameAs } from '../../src/rules'
 
 test.group('Tests for the built-in "sameAs" validator', () => {
   test('existing valid value succeeds', async assert => {

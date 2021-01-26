@@ -6,23 +6,7 @@ import {
   Validator,
   GroupValidator,
 } from './Validator'
-import { RuleValidator, ValidationRule } from './types'
-
-/**
- * The type definition of an object that defines the validation riles for a type
- */
-export type Rules<T> = { [Key in keyof T]?: { [key: string]: RuleValidator<T[Key]> } }
-
-/**
- * The type definition of a group of validation rules for a type
- */
-export type GroupRules<T> =
-  | {
-      [Key in keyof T]?: { [validatorName: string]: RuleValidator<T[Key]> }
-    }
-  | {
-      [groupName: string]: (keyof T)[]
-    }
+import { RuleValidator, ValidationRule, Rules, GroupRules } from './types'
 
 /**
  * Creates a validation object for the supplied model based on the supplied rules
@@ -38,6 +22,7 @@ export const useValidator = <T>(
   const descriptors = Object.getOwnPropertyDescriptors(model)
   const modelKeys = Object.keys(descriptors)
 
+  // Create a list of Validation rules
   const validationRules = new Array<ValidationRule<T>>()
   modelKeys.forEach(propertyName => {
     const pr = Object.getOwnPropertyDescriptor(rules, propertyName)?.value

@@ -1,7 +1,7 @@
 import test from 'japa'
 import { ref } from 'vue'
-import { useValidator, Rules, GroupRules } from '../src'
-import { required, minLength } from '../src/rules'
+import { useValidator, Rules, GroupRules } from '../../src'
+import { required, minLength } from '../../src/rules'
 
 test.group('Basic usage of useValidator', () => {
   test('takes a rules object and a model', assert => {

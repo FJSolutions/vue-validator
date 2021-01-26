@@ -1,6 +1,22 @@
 import { Ref } from 'vue'
 
 /**
+ * The type definition of an object that defines the validation riles for a type
+ */
+export type Rules<T> = { [Key in keyof T]?: { [key: string]: RuleValidator<T[Key]> } }
+
+/**
+ * The type definition of a group of validation rules for a type
+ */
+export type GroupRules<T> =
+  | {
+      [Key in keyof T]?: { [validatorName: string]: RuleValidator<T[Key]> }
+    }
+  | {
+      [groupName: string]: (keyof T)[]
+    }
+
+/**
  * The signature of a validation function: `async` function that takes a value and validates it
  */
 export type ValidationFunction<T> = (

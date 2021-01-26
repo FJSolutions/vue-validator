@@ -1,7 +1,7 @@
 import test, { skip } from 'japa'
 import { ref } from 'vue'
-import { useValidator, Rules } from '../src'
-import { integer } from '../src/rules'
+import { useValidator, Rules } from '../../src'
+import { integer } from '../../src/rules'
 
 test.group('Tests for the built-in "integer" validator', () => {
   test('success test', async assert => {

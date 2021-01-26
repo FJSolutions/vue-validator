@@ -1,19 +1,18 @@
 import test from 'japa'
 import { ref } from 'vue'
-import { useValidator, Rules } from '../src'
-import { maxLength } from '../src/rules'
+import { useValidator, Rules } from '../../src'
+import { isAlpha } from '../../src/rules'
 
-test.group('Tests for the built-in "maxLength" validator', () => {
+test.group('Tests the IsAlpha "built-in" rule', () => {
   test('success test', async assert => {
     // Object model
     const model = {
-      name: ref('Mo'),
-      // address: ref(''),
+      name: ref('Francis'),
     }
     // Rules model
     const rules: Rules<typeof model> = {
       name: {
-        maxLength: maxLength(3),
+        isAlpha,
       },
     }
     // Pass in the model and rules
@@ -30,13 +29,12 @@ test.group('Tests for the built-in "maxLength" validator', () => {
   test('failure test', async assert => {
     // Object model
     const model = {
-      name: ref('Francis'),
-      // address: ref(''),
+      name: ref('Francis3'),
     }
     // Rules model
     const rules: Rules<typeof model> = {
       name: {
-        maxLength: maxLength(3),
+        isAlpha,
       },
     }
     // Pass in the model and rules

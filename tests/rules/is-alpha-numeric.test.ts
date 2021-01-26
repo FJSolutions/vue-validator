@@ -1,19 +1,18 @@
 import test from 'japa'
 import { ref } from 'vue'
-import { useValidator, Rules } from '../src'
-import { required } from '../src/rules'
+import { useValidator, Rules } from '../../src'
+import { isAlphaNumeric } from '../../src/rules'
 
-test.group('Tests for the built-in "required" validator', () => {
-  test('existing valid value succeeds', async assert => {
+test.group('Tests the isAlphaNumeric "built-in" rule', () => {
+  test('success test', async assert => {
     // Object model
     const model = {
-      name: ref('Francis'),
-      // address: ref(''),
+      name: ref('Francis7'),
     }
     // Rules model
     const rules: Rules<typeof model> = {
       name: {
-        required,
+        isAlphaNumeric,
       },
     }
     // Pass in the model and rules
@@ -27,16 +26,15 @@ test.group('Tests for the built-in "required" validator', () => {
     assert.equal(v.name.errors.length, 0)
   })
 
-  test('existing invalid value fails', async assert => {
+  test('failure test', async assert => {
     // Object model
     const model = {
-      name: ref(''),
-      // address: ref(''),
+      name: ref('Fr@ncis3'),
     }
     // Rules model
     const rules: Rules<typeof model> = {
       name: {
-        required,
+        isAlphaNumeric,
       },
     }
     // Pass in the model and rules

@@ -1,9 +1,9 @@
 import test, { skip } from 'japa'
 import { ref } from 'vue'
-import { useValidator, Rules } from '../src'
-import { betweenValues } from '../src/rules'
+import { useValidator, Rules } from '../../src'
+import { maxValue } from '../../src/rules'
 
-test.group('Tests for the built-in "betweenValues" validator', () => {
+test.group('Tests for the built-in "maxValue" validator', () => {
   test('success test', async assert => {
     // Object model
     const model = {
@@ -13,7 +13,7 @@ test.group('Tests for the built-in "betweenValues" validator', () => {
     // Rules model
     const rules: Rules<typeof model> = {
       age: {
-        betweenValues: betweenValues(0, 100),
+        maxValue: maxValue(100),
       },
     }
     // Pass in the model and rules
@@ -39,7 +39,7 @@ test.group('Tests for the built-in "betweenValues" validator', () => {
     // Rules model
     const rules: Rules<typeof model> = {
       age: {
-        betweenValues: betweenValues(0, 100),
+        maxValue: maxValue(120),
       },
     }
     // Pass in the model and rules

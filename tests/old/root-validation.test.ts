@@ -1,7 +1,7 @@
 import test from 'japa'
 import { Ref, ref } from 'vue'
-import { useValidator, Rules, GroupRules } from '../src'
-import { required, minLength } from '../src/rules'
+import { useValidator, Rules, GroupRules } from '../../src'
+import { required, minLength } from '../../src/rules'
 
 test.group('Test the root validator properties and methods', () => {
   test('success when all properties are valid', async assert => {

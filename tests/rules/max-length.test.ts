@@ -1,19 +1,19 @@
 import test from 'japa'
 import { ref } from 'vue'
-import { useValidator, Rules } from '../src'
-import { minLength } from '../src/rules'
+import { useValidator, Rules } from '../../src'
+import { maxLength } from '../../src/rules'
 
-test.group('Tests for the built-in "minLength" validator', () => {
+test.group('Tests for the built-in "maxLength" validator', () => {
   test('success test', async assert => {
     // Object model
     const model = {
-      name: ref('Francis'),
+      name: ref('Mo'),
       // address: ref(''),
     }
     // Rules model
     const rules: Rules<typeof model> = {
       name: {
-        minLength: minLength(3),
+        maxLength: maxLength(3),
       },
     }
     // Pass in the model and rules
@@ -30,13 +30,13 @@ test.group('Tests for the built-in "minLength" validator', () => {
   test('failure test', async assert => {
     // Object model
     const model = {
-      name: ref(''),
+      name: ref('Francis'),
       // address: ref(''),
     }
     // Rules model
     const rules: Rules<typeof model> = {
       name: {
-        minLength: minLength(3),
+        maxLength: maxLength(3),
       },
     }
     // Pass in the model and rules

@@ -1,18 +1,19 @@
 import test from 'japa'
 import { ref } from 'vue'
-import { useValidator, Rules } from '../src'
-import { isAlphaNumeric } from '../src/rules'
+import { useValidator, Rules } from '../../src'
+import { lengthBetween } from '../../src/rules'
 
-test.group('Tests the isAlphaNumeric "built-in" rule', () => {
+test.group('Tests for the built-in "maxLength" validator', () => {
   test('success test', async assert => {
     // Object model
     const model = {
-      name: ref('Francis7'),
+      name: ref('Francis'),
+      // address: ref(''),
     }
     // Rules model
     const rules: Rules<typeof model> = {
       name: {
-        isAlphaNumeric,
+        lengthBetween: lengthBetween(3, 10),
       },
     }
     // Pass in the model and rules
@@ -29,12 +30,13 @@ test.group('Tests the isAlphaNumeric "built-in" rule', () => {
   test('failure test', async assert => {
     // Object model
     const model = {
-      name: ref('Fr@ncis3'),
+      name: ref('Mo'),
+      // address: ref(''),
     }
     // Rules model
     const rules: Rules<typeof model> = {
       name: {
-        isAlphaNumeric,
+        lengthBetween: lengthBetween(3, 10),
       },
     }
     // Pass in the model and rules
