@@ -1,7 +1,9 @@
 # vue-validator
 
 A green-fields implementation of a validator for `Vue3` in `TypeScript` that provides good `IntelliSense`.
-Inspired by [Vuelidate](https://github.com/vuelidate/vuelidate) 2
+Inspired by [Vuelidate](https://github.com/vuelidate/vuelidate) 2.
+
+**N.B.** This package is still in Alpha while I bed-down the best working architecture for its implementation.
 
 ## Usage
 
