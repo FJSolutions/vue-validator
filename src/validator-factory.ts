@@ -1,17 +1,245 @@
-import { Ref } from 'vue'
-import { GroupRules, Rules, RuleValidator, ValidationRule } from './types'
-import { PropertyValidator } from './Validator'
+import { isMethodDeclaration } from 'typescript'
+import { Ref, ref, computed, watch } from 'vue'
+import {
+  GroupRules,
+  Rules,
+  RuleValidator,
+  ValidationRule,
+  ValidationError,
+  IValidator,
+  IPropertyValidator,
+  PropertyRule,
+} from './types'
 
-export const useValidator = <T>(
-  model: T,
-  rules: Rules<T & { [key: string]: any }> | GroupRules<T>,
+export const useRulesConstructor = <T, G>(
+  validationDefinition: { [Key1 in keyof T]?: { [validatorName: string]: RuleValidator<T[Key1]> } } &
+    // & { [groupName: string]: (keyof T)[]}
+    { [Key2 in keyof G]: (keyof T)[] },
 ) => {
+  return validationDefinition
+}
+
+/**
+ * Creates a validator for the supplied model using the rules as a definition
+ *
+ * @param model The model to validate
+ * @param rules The rule definitions to validate the model against
+ */
+export const useValidator = <T extends { [key: string]: any }, G = {}>(
+  model: T,
+  rules: Rules<T & { [key: string]: any }> | GroupRules<T, G>,
+): IValidator<T> & { [Key in keyof T]: IPropertyValidator<T[Key]> } => {
   // Get the property structure for the model
   const descriptors = Object.getOwnPropertyDescriptors(model)
   const modelKeys = Object.keys(descriptors)
+  const v = {}
 
   // Create a list of Validation rules
+  const validationRules = getValidationRules(modelKeys, rules)
+
+  // The master list of property validators
+  const propertyRules = setPropertyRules(model, rules, descriptors, modelKeys)
+
+  const validatorProperties = propertyRules.map(pv => {
+    const propertyRules = validationRules.filter(r => r.propertyName === pv.propertyName)
+    const po = createPropertyValidator(model, propertyRules, pv.propertyName)
+    Object.defineProperty(v, pv.propertyName, { value: po, enumerable: true, writable: false, configurable: false })
+
+    return po
+  })
+
+  createValidator(v as any, propertyRules, validatorProperties)
+
+  // TODO: Create group validator
+  createGroupValidator(v, rules, modelKeys, validatorProperties as any)
+
+  // console.log(v)
+
+  return v as any
+}
+
+const createGroupValidator = <T>(
+  v: any,
+  rules: { [key: string]: any },
+  modelKeys: string[],
+  validatorProperties: IPropertyValidator<T> & { _propertyName: string }[],
+) => {
+  const groupKeys = Object.keys(rules).filter(rn => !modelKeys.some(mn => mn === rn))
+
+  groupKeys.map(gn => {
+    // FIX: This should be an IValidator for the selected properties
+    const namedGroup = {}
+    const groupPropertyNames = rules[gn] as string[]
+    groupPropertyNames.forEach(gpn => {
+      validatorProperties
+        .filter(vp => {
+          return vp._propertyName === gpn
+        })
+        .forEach(vp => {
+          Object.defineProperty(namedGroup, vp._propertyName, { value: vp, enumerable: true, writable: false })
+        })
+    })
+
+    Object.defineProperty(v, gn, { value: namedGroup, enumerable: true, writable: false })
+  })
+
+  // console.log(v)
+}
+
+const createPropertyValidator = <T extends { [key: string]: any }>(
+  context: T,
+  rules: ValidationRule<any>[],
+  propertyName: string,
+) => {
+  const isDirty = ref(false)
+  const isPending = ref(false)
+  const errors = ref(new Array<ValidationError>())
+  const model: Ref<T> = context[propertyName]
+  const isInvalid = ref(false)
+
+  // Watch for changes to the model
+  watch(
+    model,
+    async (value, oldValue) => {
+      isDirty.value = true
+      await validate()
+    },
+    { flush: 'sync' },
+  )
+
+  // Validate all the rules for this property
+  const validate = async () => {
+    isPending.value = true
+    errors.value.length = 0
+
+    let isValid = true
+    for (let i = 0; i < rules.length; i++) {
+      const r = rules[i]
+
+      if (!(await r.rule.validator(model.value, context))) {
+        isValid = false
+        errors.value.push({
+          message: r.rule.message,
+          propertyName: propertyName,
+          ruleName: r.ruleName,
+          toString() {
+            return this.message
+          },
+        } as ValidationError)
+      }
+    }
+
+    isInvalid.value = !isValid
+    isPending.value = false
+
+    return isValid
+  }
+
+  return {
+    _propertyName: propertyName,
+    isDirty: computed(() => isDirty.value),
+    isPending: computed(() => isPending.value),
+    hasErrors: computed(() => errors.value && errors.value.length > 0),
+    errors: computed(() => errors.value),
+    isInvalid: computed(() => isInvalid.value),
+    model,
+    validate,
+  }
+}
+
+const createValidator = (
+  v: IValidator<any> & { [key: string]: IPropertyValidator<any> },
+  propertyRules: PropertyRule<any>[],
+  validatorProperties: IPropertyValidator<any>[],
+) => {
+  const isPending = ref(false)
+  const errors = ref(new Array<ValidationError>())
+
+  const hasErrors = computed(() => errors.value && errors.value.length > 0)
+  const isInvalid = computed(() => {
+    let i = 0
+    let isValid = true
+    while (i < validatorProperties.length) {
+      const vp = validatorProperties[i]
+      if (!vp.isInvalid.value) {
+        isValid = false
+        break
+      }
+      i += 1
+    }
+
+    return isValid
+  })
+
+  const validate = async () => {
+    isPending.value = true
+    errors.value.length = 0
+
+    // Loop all the properties and validate them
+    let isValid = true
+    for (let i = 0; i < propertyRules.length; i++) {
+      const pr = propertyRules[i]
+      const property = v[pr.propertyName]
+
+      if (!(await property.validate())) {
+        isValid = false
+        errors.value.push(...property.errors.value)
+      }
+    }
+
+    isPending.value = false
+
+    return isValid
+  }
+
+  Object.defineProperty(v, 'isInvalid', {
+    value: computed(() => isInvalid.value),
+    enumerable: true,
+    writable: false,
+    configurable: false,
+  })
+  Object.defineProperty(v, 'errors', {
+    value: computed(() => errors.value),
+    enumerable: true,
+    writable: false,
+    configurable: false,
+  })
+  Object.defineProperty(v, 'hasErrors', { value: hasErrors, enumerable: true, writable: false, configurable: false })
+  Object.defineProperty(v, 'validate', { value: validate, enumerable: true, writable: false, configurable: false })
+}
+
+const setPropertyRules = <T, G>(
+  model: T,
+  rules: Rules<T & { [key: string]: any }> | GroupRules<T, G>,
+  descriptors: { [P in keyof T]: TypedPropertyDescriptor<T[P]> } & {
+    [key: string]: PropertyDescriptor
+  },
+  modelKeys: string[],
+) => {
+  const propertyValidators = modelKeys.map(key => {
+    // Find the property's rule validator
+    const ruleObj = Object.getOwnPropertyDescriptor(rules, key)?.value as {
+      [key: string]: RuleValidator<any>
+    }
+    // Create a new property validator
+    const pv = {
+      propertyName: key,
+      propertyModel: descriptors[key] as Ref<any>,
+      rules: ruleObj,
+      model,
+    } as PropertyRule<any>
+
+    return pv
+  })
+
+  // console.log(propertyValidators)
+
+  return propertyValidators
+}
+
+const getValidationRules = <T, G>(modelKeys: string[], rules: Rules<T & { [key: string]: any }> | GroupRules<T, G>) => {
   const validationRules = new Array<ValidationRule<T>>()
+
   modelKeys.forEach(propertyName => {
     const pr = Object.getOwnPropertyDescriptor(rules, propertyName)?.value
     if (pr) {
@@ -21,18 +249,8 @@ export const useValidator = <T>(
       })
     }
   })
+
   // console.log(validationRules)
 
-  // The master list of property validators
-  const propertyValidators = modelKeys.map(key => {
-    // Find the property's rule validator
-    const rule = Object.getOwnPropertyDescriptor(rules, key)?.value as {
-      [key: string]: RuleValidator<any>
-    }
-    // Create a new property validator
-    const pv = new PropertyValidator(key, descriptors[key] as Ref<any>, rule, model)
-
-    return pv
-  })
-  // console.log(propertyValidators)
+  return validationRules
 }

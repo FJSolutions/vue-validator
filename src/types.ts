@@ -8,21 +8,18 @@ export type Rules<T> = { [Key in keyof T]?: { [key: string]: RuleValidator<T[Key
 /**
  * The type definition of a group of validation rules for a type
  */
-export type GroupRules<T> =
+export type GroupRules<T, G> =
   | {
       [Key in keyof T]?: { [validatorName: string]: RuleValidator<T[Key]> }
     }
   | {
-      [groupName: string]: (keyof T)[]
+      [Key in keyof G]: (keyof T)[]
     }
 
 /**
  * The signature of a validation function: `async` function that takes a value and validates it
  */
-export type ValidationFunction<T> = (
-  value: any | Ref<any>,
-  context?: { [key: string]: any },
-) => Promise<Boolean>
+export type ValidationFunction<T> = (value: any, context?: { [key: string]: any }) => Promise<Boolean>
 
 /**
  * The definition of a validation rule object
@@ -61,5 +58,70 @@ export type ValidationError = {
 export type ValidationRule<T> = {
   propertyName: string
   ruleName: string
-  rule: any
+  rule: RuleValidator<T>
+}
+
+/**
+ * Represents the details of model property's rule information
+ */
+export type PropertyRule<T> = {
+  propertyName: string
+  propertyModel: T
+  rules: { [key: string]: RuleValidator<T> }
+  model: any
+}
+
+/*******************************************
+ *
+ * Public interfaces
+ *
+ *******************************************/
+
+export interface IBaseValidator {
+  /**
+   * Gets a value indicating if the validator is in an invalid state after the last validation
+   */
+  readonly isInvalid: Ref<boolean>
+  /**
+   * Gets a list of errors from the last validation
+   */
+  readonly errors: Ref<Array<ValidationError>>
+  /**
+   * Gets a value indicating if there are errors
+   */
+  readonly hasErrors: Ref<boolean>
+  /**
+   * Trigger a validation
+   *
+   * @returns (async) true, if validation succeeds
+   */
+  validate(): Promise<boolean>
+}
+
+/**
+ * The interface for the root validator
+ */
+export interface IValidator<T> extends IBaseValidator {
+  /**
+   * An object containing any validation groups
+   */
+  readonly groups: {
+    [key: string]: {
+      [Key in keyof T]?: { [validatorName: string]: IPropertyValidator<T[Key]> }
+    }
+  }
+}
+
+/**
+ * The public interface of a validator object
+ */
+export interface IPropertyValidator<T> extends IBaseValidator {
+  /**
+   * Gets a value indicating if the validator has had its model value set
+   */
+  readonly isDirty: Ref<boolean>
+  /**
+   * The model object that is being validated
+   */
+  readonly model: T
 }

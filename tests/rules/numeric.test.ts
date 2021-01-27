@@ -26,7 +26,7 @@ test.group('Tests for the built-in "numeric" validator', () => {
     assert.isFalse(v.age.isInvalid.value)
     assert.isFalse(v.age.isDirty.value)
     assert.exists(v.age.errors)
-    assert.equal(v.age.errors.length, 0)
+    assert.equal(v.age.errors.value.length, 0)
   })
 
   test('success test with string', async assert => {
@@ -53,7 +53,7 @@ test.group('Tests for the built-in "numeric" validator', () => {
     assert.isFalse(v.age.isInvalid.value)
     assert.isFalse(v.age.isDirty.value)
     assert.exists(v.age.errors)
-    assert.equal(v.age.errors.length, 0)
+    assert.equal(v.age.errors.value.length, 0)
   })
 
   test('failure test', async assert => {
@@ -78,7 +78,7 @@ test.group('Tests for the built-in "numeric" validator', () => {
     assert.isTrue(v.age.isInvalid.value)
     assert.isFalse(v.age.isDirty.value)
     assert.exists(v.age.errors)
-    assert.equal(v.age.errors.length, 1)
+    assert.equal(v.age.errors.value.length, 1)
 
     // console.log(v.name.errors[0].toString())
   })
@@ -105,7 +105,7 @@ test.group('Tests for the built-in "numeric" validator', () => {
     assert.isTrue(v.age.isInvalid.value)
     assert.isFalse(v.age.isDirty.value)
     assert.exists(v.age.errors)
-    assert.equal(v.age.errors.length, 1)
+    assert.equal(v.age.errors.value.length, 1)
 
     // console.log(v.name.errors[0].toString())
   })

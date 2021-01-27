@@ -1,5 +1,6 @@
 import { createLogicalAnd } from 'typescript'
 import { Ref, isRef } from 'vue'
+import { unwrap } from './helpers'
 import { RuleValidator } from './types'
 
 /*****************************************
@@ -196,9 +197,7 @@ export const lengthBetween = (min: number, max: number) => {
     params: [min, max],
     validator: value => {
       const rawValue = isRef(value) ? (value.value as string) : value
-      return Promise.resolve(
-        typeof rawValue !== 'undefined' && rawValue.length >= min && rawValue.length <= max,
-      )
+      return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length >= min && rawValue.length <= max)
     },
   } as RuleValidator<string | Ref<string>>
 }
@@ -218,10 +217,8 @@ export const sameAs = (propertyName: string) => {
     message: `The text is not the same as ${propertyName}`,
     params: [propertyName],
     validator: (value, context) => {
-      const otherValue = isRef(context?.[propertyName])
-        ? context?.[propertyName].value
-        : context?.[propertyName]
-      const rawValue = isRef(value) ? (value.value as string) : value
+      const otherValue = unwrap(context?.[propertyName])
+      const rawValue = unwrap(value)
       // console.log('sameAs()', rawValue, otherValue)
 
       return Promise.resolve(rawValue === otherValue)
@@ -233,8 +230,8 @@ export const isAlpha = {
   ruleName: 'same as',
   message: `The text contains non-alphabetic letters`,
   params: [],
-  validator: value => {
-    const rawValue = String(isRef(value) ? (value.value as string) : value) || ''
+  validator: (value: string) => {
+    const rawValue = String(value) || ''
 
     let isValid = true
     for (let i = 0; i < rawValue.length; i++) {

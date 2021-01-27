@@ -1,12 +1,15 @@
 import { Ref } from 'vue'
 import {
-  IValidator,
-  IPropertyValidator,
+  // IValidator,
+  // IPropertyValidator,
   PropertyValidator,
   Validator,
   GroupValidator,
 } from './Validator'
 import { RuleValidator, ValidationRule, Rules, GroupRules } from './types'
+
+export type { RuleValidator, ValidationRule, Rules, GroupRules } from './types'
+export { useValidator } from './validator-factory'
 
 /**
  * Creates a validation object for the supplied model based on the supplied rules
@@ -14,10 +17,7 @@ import { RuleValidator, ValidationRule, Rules, GroupRules } from './types'
  * @param model The model object to validate
  * @param rules The object that defines the validations for a model
  */
-export const useValidator = <T>(
-  model: T,
-  rules: Rules<T & { [key: string]: any }> | GroupRules<T>,
-) => {
+const useValidator = <T>(model: T, rules: Rules<T & { [key: string]: any }> | GroupRules<T>) => {
   // Get the property structure for the model
   const descriptors = Object.getOwnPropertyDescriptors(model)
   const modelKeys = Object.keys(descriptors)
@@ -69,7 +69,7 @@ export const useValidator = <T>(
     })
     // .filter(o => typeof o !== 'undefined')
     .forEach((gp: { groupName: string; propertyNames: string[] }) => {
-      const vRules = new Array<PropertyValidator<any, T>>()
+      const vRules = new Array<PropertyValidator<any>>()
       gp.propertyNames.forEach((propertyName: string) => {
         const vr = propertyValidators.find(vr => vr.PropertyName === propertyName)
         if (vr) {
@@ -97,10 +97,10 @@ export const useValidator = <T>(
     })
   })
 
-  type ValidatorType = IValidator<T, { [key: string]: GroupValidator }> &
-    { [Key in keyof T]: IPropertyValidator<T[Key]> }
+  // type ValidatorType = IValidator<T, { [key: string]: GroupValidator }> &
+  //   { [Key in keyof T]: IPropertyValidator<T[Key]> }
 
   // const ro = (v as unknown) as ValidatorType
   // console.log(ro.groups)
-  return (v as unknown) as ValidatorType
+  return v as any
 }

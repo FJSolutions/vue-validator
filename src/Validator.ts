@@ -1,57 +1,6 @@
 import { ListFormat } from 'typescript'
 import { ref, Ref } from 'vue'
-import { RuleValidator, ValidationError } from './types'
-
-/*******************************************
- *
- * Public interfaces
- *
- *******************************************/
-
-interface IRootValidator {
-  /**
-   * Gets a value indicating if the validator is in an invalid state after the last validation
-   */
-  readonly isInvalid: Ref<boolean>
-  /**
-   * Gets a list of errors from the last validation
-   */
-  readonly errors: Array<ValidationError>
-  /**
-   * Gets a value indicating if there are errors
-   */
-  readonly hasErrors: Ref<boolean>
-  /**
-   * Trigger a validation
-   *
-   * @returns (async) true, if validation succeeds
-   */
-  validate(): Promise<boolean>
-}
-
-/**
- * The interface for the root validator
- */
-export interface IValidator<T, G> extends IRootValidator {
-  /**
-   * An object containing any validation groups
-   */
-  readonly groups: G
-}
-
-/**
- * The public interface of a validator object
- */
-export interface IPropertyValidator<T> extends IRootValidator {
-  /**
-   * Gets a value indicating if the validator has had its model value set
-   */
-  readonly isDirty: Ref<boolean>
-  /**
-   * The validator's model (for binding purposes)
-   */
-  readonly model: T
-}
+import { IPropertyValidator, IBaseValidator, IValidator, RuleValidator, ValidationError } from './types'
 
 /*****************************************
  *
@@ -62,14 +11,14 @@ export interface IPropertyValidator<T> extends IRootValidator {
 /**
  * The implementation of the root validator object
  */
-export class Validator<T, G> implements IValidator<T, G> {
+export class Validator<T> implements IValidator<T> {
   private _isInvalid = ref(false)
   private _hasErrors = ref(false)
   private _errors = new Array<ValidationError>()
-  private _groups: G
-  private _validators: Array<PropertyValidator<any, any>>
+  private _groups: any
+  private _validators: Array<PropertyValidator<any>>
 
-  constructor(validators: Array<PropertyValidator<any, any>>, groupObject: G) {
+  constructor(validators: Array<PropertyValidator<any>>, groupObject: any) {
     this._validators = validators
     this._groups = groupObject
   }
@@ -78,7 +27,7 @@ export class Validator<T, G> implements IValidator<T, G> {
     return this._isInvalid
   }
 
-  public get errors() {
+  public get errors(): any {
     return this._errors
   }
 
@@ -86,8 +35,12 @@ export class Validator<T, G> implements IValidator<T, G> {
     return this._hasErrors
   }
 
-  public get groups() {
+  public get groups(): any {
     return this._groups
+  }
+
+  public get model(): any {
+    throw new Error('Not implemented!')
   }
 
   public async validate(): Promise<boolean> {
@@ -119,7 +72,7 @@ export class Validator<T, G> implements IValidator<T, G> {
 /**
  * The implementation of a property validator
  */
-export class PropertyValidator<T extends Ref, M> implements IPropertyValidator<T> {
+export class PropertyValidator<T extends Ref> implements IPropertyValidator<T> {
   private _isDirty = ref(false)
   private _isInvalid = ref(false)
   private _hasErrors = ref(false)
@@ -128,14 +81,9 @@ export class PropertyValidator<T extends Ref, M> implements IPropertyValidator<T
   private _lastValue?: any
   private _propertyName: string
   private _rules: { [key: string]: RuleValidator<T> }
-  private _model: M
+  private _model: any
 
-  constructor(
-    propertyName: string,
-    propertyModel: T,
-    rules: { [key: string]: RuleValidator<T> },
-    model: M,
-  ) {
+  constructor(propertyName: string, propertyModel: T, rules: { [key: string]: RuleValidator<T> }, model: any) {
     this._model = model
     this._propertyName = propertyName
     this._rules = rules
@@ -179,7 +127,7 @@ export class PropertyValidator<T extends Ref, M> implements IPropertyValidator<T
     return this._isInvalid
   }
 
-  public get errors() {
+  public get errors(): any {
     return this._errors
   }
 
@@ -228,13 +176,13 @@ export class PropertyValidator<T extends Ref, M> implements IPropertyValidator<T
   }
 }
 
-export class GroupValidator implements IRootValidator {
+export class GroupValidator<T> implements IBaseValidator {
   private _isInvalid = ref(false)
   private _hasErrors = ref(false)
   private _errors = new Array<ValidationError>()
-  private _propertyValidators: PropertyValidator<any, any>[]
+  private _propertyValidators: PropertyValidator<any>[]
 
-  constructor(propertyValidators: PropertyValidator<any, any>[]) {
+  constructor(propertyValidators: PropertyValidator<any>[]) {
     this._propertyValidators = propertyValidators
   }
 
@@ -242,12 +190,16 @@ export class GroupValidator implements IRootValidator {
     return this._isInvalid
   }
 
-  public get errors() {
+  public get errors(): any {
     return this._errors
   }
 
   public get hasErrors() {
     return this._hasErrors
+  }
+
+  public get model(): any {
+    throw new Error('Not implemented!')
   }
 
   public async validate(): Promise<boolean> {

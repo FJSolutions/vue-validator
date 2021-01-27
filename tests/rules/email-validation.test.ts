@@ -29,7 +29,7 @@ test.group('Tests for the built-in "emailAddress" validator', () => {
     assert.isFalse(v.name.isDirty.value)
     assert.isFalse(v.email.isDirty.value)
     assert.exists(v.errors)
-    assert.equal(v.errors.length, 0)
+    assert.equal(v.errors.value.length, 0)
   })
 
   test('failure test', async assert => {
@@ -61,6 +61,6 @@ test.group('Tests for the built-in "emailAddress" validator', () => {
     assert.isFalse(v.email.isDirty.value)
     assert.isFalse(v.name.isInvalid.value)
     assert.isFalse(v.name.isDirty.value)
-    assert.equal(v.errors.length, 1)
+    assert.equal(v.errors.value.length, 1)
   })
 })

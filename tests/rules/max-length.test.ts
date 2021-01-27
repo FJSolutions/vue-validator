@@ -24,7 +24,7 @@ test.group('Tests for the built-in "maxLength" validator', () => {
     assert.isFalse(v.name.isInvalid.value)
     assert.isFalse(v.name.isDirty.value)
     assert.exists(v.name.errors)
-    assert.equal(v.name.errors.length, 0)
+    assert.equal(v.name.errors.value.length, 0)
   })
 
   test('failure test', async assert => {
@@ -47,7 +47,7 @@ test.group('Tests for the built-in "maxLength" validator', () => {
     assert.isTrue(v.name.isInvalid.value)
     assert.isFalse(v.name.isDirty.value)
     assert.exists(v.name.errors)
-    assert.equal(v.name.errors.length, 1)
+    assert.equal(v.name.errors.value.length, 1)
 
     // console.log(v.name.errors[0].toString())
   })
