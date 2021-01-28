@@ -100,12 +100,12 @@ test.group('Tests the ValidatorFactory implementation', () => {
     // Object model
     const name = ref('')
     const age = ref(55)
-    const address = ref('')
+    const address = ref('75 Valley Road')
     const model = { name, age, address } as const
     // Group type interface
     interface IGroup {
-      group1: any
-      group7: any
+      personGroup: string[]
+      addressGroup: string[]
     }
     // Rules model
     const rules = useRulesConstructor<typeof model, IGroup>({
@@ -115,8 +115,8 @@ test.group('Tests the ValidatorFactory implementation', () => {
       address: {
         required,
       },
-      group1: ['name', 'age'],
-      group7: ['address'],
+      personGroup: ['name', 'age'],
+      addressGroup: ['address'],
       // group7: [],
       // group3: ['name'],
       // group1: ['name', 'age'],
@@ -127,11 +127,33 @@ test.group('Tests the ValidatorFactory implementation', () => {
     // Create the validator
     const v = useValidator(model, rules)
 
-    assert.exists(v)
-    console.log('useValidator:', v.groups)
+    // console.log(v.personGroup.isInvalid.value)
+    // console.log(v.addressGroup.isInvalid.value)
 
-    // const r = { ...rules } as const
-    // type t = InstanceType<typeof r>
-    // const o: t = {}
+    assert.exists(v)
+    assert.exists(v.personGroup)
+    // @ts-ignore
+    assert.exists(v.personGroup.name)
+    // @ts-ignore
+    assert.exists(v.personGroup.age)
+    // @ts-ignore
+    assert.notExists(v.personGroup.address)
+    assert.isFalse(v.personGroup.isInvalid.value)
+    // @ts-ignore
+    assert.isFalse(v.personGroup.name.isInvalid.value)
+    // @ts-ignore
+    assert.isFalse(v.personGroup.age.isInvalid.value)
+    assert.isFalse(await v.personGroup.validate())
+    // @ts-ignore
+    assert.isTrue(v.personGroup.name.isInvalid.value)
+    // @ts-ignore
+    assert.isFalse(v.personGroup.age.isInvalid.value)
+    assert.isTrue(v.personGroup.isInvalid.value)
+    assert.exists(v.address)
+    assert.isFalse(v.addressGroup.isInvalid.value)
+    assert.isTrue(await v.addressGroup.validate())
+    assert.isFalse(v.addressGroup.isInvalid.value)
+    // @ts-ignore
+    assert.isFalse(v.addressGroup.address.isInvalid.value)
   })
 })

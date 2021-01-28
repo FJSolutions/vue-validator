@@ -10,6 +10,7 @@ import {
   IPropertyValidator,
   PropertyRule,
 } from './types'
+import { GroupValidator } from './Validator'
 
 export const useRulesConstructor = <T, G>(
   validationDefinition: { [Key1 in keyof T]?: { [validatorName: string]: RuleValidator<T[Key1]> } } &
@@ -28,7 +29,7 @@ export const useRulesConstructor = <T, G>(
 export const useValidator = <T extends { [key: string]: any }, G = {}>(
   model: T,
   rules: Rules<T & { [key: string]: any }> | GroupRules<T, G>,
-): IValidator<T> & { [Key in keyof T]: IPropertyValidator<T[Key]> } => {
+) => {
   // Get the property structure for the model
   const descriptors = Object.getOwnPropertyDescriptors(model)
   const modelKeys = Object.keys(descriptors)
@@ -55,35 +56,90 @@ export const useValidator = <T extends { [key: string]: any }, G = {}>(
 
   // console.log(v)
 
-  return v as any
+  return (v as unknown) as IValidator & // A validator
+    // A property from the model with a validator
+    { [Key in keyof T]: IPropertyValidator<T[Key]> } &
+    // Group object properties that exposer validators
+    { [key in keyof G]: IValidator }
 }
+
+/******************************************
+ *
+ * Private builder methods
+ *
+ ******************************************/
 
 const createGroupValidator = <T>(
   v: any,
   rules: { [key: string]: any },
   modelKeys: string[],
-  validatorProperties: IPropertyValidator<T> & { _propertyName: string }[],
+  validatorProperties: (IPropertyValidator<T> & { _propertyName: string })[],
 ) => {
+  // Get the list of groups names
   const groupKeys = Object.keys(rules).filter(rn => !modelKeys.some(mn => mn === rn))
 
-  groupKeys.map(gn => {
-    // FIX: This should be an IValidator for the selected properties
-    const namedGroup = {}
-    const groupPropertyNames = rules[gn] as string[]
-    groupPropertyNames.forEach(gpn => {
-      validatorProperties
-        .filter(vp => {
-          return vp._propertyName === gpn
-        })
-        .forEach(vp => {
-          Object.defineProperty(namedGroup, vp._propertyName, { value: vp, enumerable: true, writable: false })
-        })
+  // Loop the group names and create their group validators
+  groupKeys.forEach(gn => {
+    const groupProperties: (IPropertyValidator<T> & { _propertyName: string })[] = (rules[gn] as string[]).map(
+      gpn => validatorProperties.find(vp => vp._propertyName === gpn)!,
+    )
+
+    // This should be an IValidator for the selected properties
+    const gpv = createGroupPropertyValidator(groupProperties)
+
+    groupProperties.forEach(gp => {
+      Object.defineProperty(gpv, gp._propertyName, { value: gp, enumerable: true, writable: false })
     })
 
-    Object.defineProperty(v, gn, { value: namedGroup, enumerable: true, writable: false })
+    // Add the group property with its group-validator to the root-validator
+    Object.defineProperty(v, gn, { value: gpv, enumerable: true, writable: false })
   })
 
   // console.log(v)
+}
+
+const createGroupPropertyValidator = <T>(validatorProperties: IPropertyValidator<T>[]) => {
+  const errors = ref(new Array<ValidationError>())
+
+  const isInvalid = computed(() => {
+    let i = 0
+    let isValid = true
+    while (i < validatorProperties.length) {
+      const vp = validatorProperties[i]
+      // // @ts-ignore
+      // console.log(vp._propertyName, vp.isInvalid.value)
+      if (vp.isInvalid.value) {
+        isValid = false
+        break
+      }
+      i += 1
+    }
+
+    return !isValid
+  })
+
+  const validate = async () => {
+    errors.value.length = 0
+
+    let isValid = true
+    for (let i = 0; i < validatorProperties.length; i++) {
+      const r = validatorProperties[i]
+
+      if (!(await r.validate())) {
+        isValid = false
+        errors.value.push(...r.errors.value)
+      }
+    }
+
+    return isValid
+  }
+
+  return {
+    isInvalid,
+    errors,
+    hasErrors: computed(() => errors.value && errors.value.length > 0),
+    validate,
+  } as IValidator
 }
 
 const createPropertyValidator = <T extends { [key: string]: any }>(
@@ -148,7 +204,7 @@ const createPropertyValidator = <T extends { [key: string]: any }>(
 }
 
 const createValidator = (
-  v: IValidator<any> & { [key: string]: IPropertyValidator<any> },
+  v: IValidator & { [key: string]: IPropertyValidator<any> },
   propertyRules: PropertyRule<any>[],
   validatorProperties: IPropertyValidator<any>[],
 ) => {

@@ -31,7 +31,7 @@ const rules: Rules<typeof model> = {
 const v = useValidator(model, rules)
 ```
 
-The `v` object now has a property structure like:
+The `v` validator object has a property structure like:
 
 ```sh
 v
@@ -58,12 +58,16 @@ v
 
 And each of the branches also has a `validate()` method that returns a `Promise<boolean>`.
 
-## Limitations
+### Limitations
 
 - The model has to have a flat structure
 - The model's properties must all be `Ref` values
 
-## Rules
+## Binding
+
+## Grouping Validation
+
+## Built-in Rules
 
 - Required
 - EmailAddress
@@ -91,7 +95,7 @@ The following helper functions can be useful for creating a password rule
 - containsDigit
 - containsSymbol
 
-### ToDo (Possibly)
+## ToDo (Possibly)
 
 - RequiredIf
 - RequiredUnless

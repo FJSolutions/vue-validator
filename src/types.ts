@@ -77,7 +77,10 @@ export type PropertyRule<T> = {
  *
  *******************************************/
 
-export interface IBaseValidator {
+/**
+ * The interface for the root validator
+ */
+export interface IValidator {
   /**
    * Gets a value indicating if the validator is in an invalid state after the last validation
    */
@@ -99,23 +102,9 @@ export interface IBaseValidator {
 }
 
 /**
- * The interface for the root validator
- */
-export interface IValidator<T> extends IBaseValidator {
-  /**
-   * An object containing any validation groups
-   */
-  readonly groups: {
-    [key: string]: {
-      [Key in keyof T]?: { [validatorName: string]: IPropertyValidator<T[Key]> }
-    }
-  }
-}
-
-/**
  * The public interface of a validator object
  */
-export interface IPropertyValidator<T> extends IBaseValidator {
+export interface IPropertyValidator<T> extends IValidator {
   /**
    * Gets a value indicating if the validator has had its model value set
    */
