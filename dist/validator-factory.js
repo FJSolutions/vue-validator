@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,25 +7,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useValidator = exports.useRulesConstructor = void 0;
-const vue_1 = require("vue");
+import { ref, computed, watch } from 'vue';
 /**
  * Wraps making a valid Rules configuration object byt supply ig type information as type parameters to this constructor funvtion
  *
  * @param validationDefinition An object literal that confirms to a validation configuration interface
  */
-const useRulesConstructor = (validationDefinition) => {
+export const useRulesConstructor = (validationDefinition) => {
     return validationDefinition;
 };
-exports.useRulesConstructor = useRulesConstructor;
 /**
  * Creates a validator for the supplied model using the rules as a definition
  *
  * @param model The model to validate
  * @param rules The rule definitions to validate the model against
  */
-const useValidator = (model, rules) => {
+export const useValidator = (model, rules) => {
     // Get the property structure for the model
     const descriptors = Object.getOwnPropertyDescriptors(model);
     const modelKeys = Object.keys(descriptors);
@@ -49,7 +45,6 @@ const useValidator = (model, rules) => {
     // Return a strongly typed validator for this configuration
     return v;
 };
-exports.useValidator = useValidator;
 /******************************************
  *
  * Private builder methods
@@ -71,8 +66,8 @@ const createGroupValidator = (v, rules, modelKeys, validatorProperties) => {
     });
 };
 const createGroupPropertyValidator = (validatorProperties) => {
-    const errors = vue_1.ref(new Array());
-    const isInvalid = vue_1.computed(() => {
+    const errors = ref(new Array());
+    const isInvalid = computed(() => {
         let i = 0;
         let isValid = true;
         while (i < validatorProperties.length) {
@@ -100,18 +95,18 @@ const createGroupPropertyValidator = (validatorProperties) => {
     return {
         isInvalid,
         errors,
-        hasErrors: vue_1.computed(() => errors.value && errors.value.length > 0),
+        hasErrors: computed(() => errors.value && errors.value.length > 0),
         validate,
     };
 };
 const createPropertyValidator = (context, rules, propertyName) => {
-    const isDirty = vue_1.ref(false);
-    const isPending = vue_1.ref(false);
-    const errors = vue_1.ref(new Array());
+    const isDirty = ref(false);
+    const isPending = ref(false);
+    const errors = ref(new Array());
     const model = context[propertyName];
-    const isInvalid = vue_1.ref(false);
+    const isInvalid = ref(false);
     // Watch for changes to the model
-    vue_1.watch(model, (value, oldValue) => __awaiter(void 0, void 0, void 0, function* () {
+    watch(model, (value, oldValue) => __awaiter(void 0, void 0, void 0, function* () {
         isDirty.value = true;
         yield validate();
     }), { flush: 'sync' });
@@ -140,20 +135,20 @@ const createPropertyValidator = (context, rules, propertyName) => {
     });
     return {
         _propertyName: propertyName,
-        isDirty: vue_1.computed(() => isDirty.value),
-        isPending: vue_1.computed(() => isPending.value),
-        hasErrors: vue_1.computed(() => errors.value && errors.value.length > 0),
-        errors: vue_1.computed(() => errors.value),
-        isInvalid: vue_1.computed(() => isInvalid.value),
+        isDirty: computed(() => isDirty.value),
+        isPending: computed(() => isPending.value),
+        hasErrors: computed(() => errors.value && errors.value.length > 0),
+        errors: computed(() => errors.value),
+        isInvalid: computed(() => isInvalid.value),
         model,
         validate,
     };
 };
 const createValidator = (v, propertyRules, validatorProperties) => {
-    const isPending = vue_1.ref(false);
-    const errors = vue_1.ref(new Array());
-    const hasErrors = vue_1.computed(() => errors.value && errors.value.length > 0);
-    const isInvalid = vue_1.computed(() => {
+    const isPending = ref(false);
+    const errors = ref(new Array());
+    const hasErrors = computed(() => errors.value && errors.value.length > 0);
+    const isInvalid = computed(() => {
         let i = 0;
         let isValid = true;
         while (i < validatorProperties.length) {
@@ -183,13 +178,13 @@ const createValidator = (v, propertyRules, validatorProperties) => {
         return isValid;
     });
     Object.defineProperty(v, 'isInvalid', {
-        value: vue_1.computed(() => isInvalid.value),
+        value: computed(() => isInvalid.value),
         enumerable: true,
         writable: false,
         configurable: false,
     });
     Object.defineProperty(v, 'errors', {
-        value: vue_1.computed(() => errors.value),
+        value: computed(() => errors.value),
         enumerable: true,
         writable: false,
         configurable: false,

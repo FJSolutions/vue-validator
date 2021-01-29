@@ -1,4 +1,9 @@
-require('ts-node').register()
+require('ts-node').register({
+  compilerOptions: {
+    "target": "ES6",
+    "module": "CommonJS"
+  }
+})
 
 const { configure } = require('japa')
 
