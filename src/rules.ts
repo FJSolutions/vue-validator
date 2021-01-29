@@ -296,7 +296,8 @@ export const integer = {
   ruleName: 'integer number',
   message: 'The number does not appear to be a valid integer',
   validator: value => {
-    const rawValue = String(isRef(value) ? (value.value as number) : value)
+    const rawValue = String(unwrap(value))
+
     return Promise.resolve(intRegex.test(rawValue))
   },
 } as RuleValidator<number | Ref<number>>
@@ -305,7 +306,7 @@ export const decimal = {
   ruleName: 'decimal number',
   message: 'The number does not appear to be in a valid decimal format',
   validator: value => {
-    const rawValue = String(isRef(value) ? (value.value as number) : value)
+    const rawValue = String(unwrap(value))
     return Promise.resolve(decimalRegex.test(rawValue))
   },
 } as RuleValidator<number | Ref<number>>
@@ -314,7 +315,7 @@ export const numeric = {
   ruleName: 'numeric',
   message: 'The number does not appear to be a valid number',
   validator: value => {
-    const rawValue = String(isRef(value) ? (value.value as number) : value)
+    const rawValue = String(unwrap(value))
     return Promise.resolve(numericRegex.test(rawValue))
   },
 } as RuleValidator<number | Ref<number>>
@@ -325,7 +326,7 @@ export const minValue = (min: number) => {
     message: `The number must be at least ${min}`,
     params: [min],
     validator: value => {
-      const rawValue = isRef(value) ? (value.value as number) : value
+      const rawValue = parseFloat(unwrap(value))
       return Promise.resolve(typeof rawValue !== 'undefined' && rawValue >= min)
     },
   } as RuleValidator<number | Ref<number>>

@@ -56,7 +56,7 @@ test.group('Tests for the built-in "emailAddress" validator', () => {
     assert.isFalse(v.name.isInvalid.value)
     assert.isFalse(v.name.isDirty.value)
     assert.isFalse(await v.validate())
-    assert.isTrue(v.isInvalid.value)
+    assert.isFalse(v.isInvalid.value)
     assert.isTrue(v.email.isInvalid.value)
     assert.isFalse(v.email.isDirty.value)
     assert.isFalse(v.name.isInvalid.value)

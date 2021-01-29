@@ -35,8 +35,8 @@ test.group('Tests for the built-in "decimal" validator', () => {
       name: ref('Mo'),
       age: ref(0.0),
     }
-    // @ts-ignore
-    model.age = '55.6'
+    // @ts-ignore 'Illegal assignment'
+    model.age.value = '55.6'
     // Rules model
     const rules: Rules<typeof model> = {
       age: {
@@ -89,7 +89,7 @@ test.group('Tests for the built-in "decimal" validator', () => {
       age: ref(55),
     }
     // @ts-ignore
-    model.age = '54'
+    model.age.value = '54'
     // Rules model
     const rules: Rules<typeof model> = {
       age: {

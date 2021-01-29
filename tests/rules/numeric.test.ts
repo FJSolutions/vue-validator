@@ -35,8 +35,8 @@ test.group('Tests for the built-in "numeric" validator', () => {
       name: ref('Mo'),
       age: ref(0.0),
     }
-    // @ts-ignore
-    model.age = '55.5'
+    // @ts-ignore 'Invalid input'
+    model.age.value = '55.5'
     // Rules model
     const rules: Rules<typeof model> = {
       age: {
@@ -62,8 +62,8 @@ test.group('Tests for the built-in "numeric" validator', () => {
       name: ref('Francis'),
       age: ref(0),
     }
-    // @ts-ignore
-    model.age = 'Cape'
+    // @ts-ignore 'Invalid input'
+    model.age.value = 'Cape'
     // Rules model
     const rules: Rules<typeof model> = {
       age: {
@@ -89,8 +89,8 @@ test.group('Tests for the built-in "numeric" validator', () => {
       name: ref('Francis'),
       age: ref(55),
     }
-    // @ts-ignore
-    model.age = 'R123.4'
+    // @ts-ignore 'Invalid input'
+    model.age.value = 'R123.4'
     // Rules model
     const rules: Rules<typeof model> = {
       age: {

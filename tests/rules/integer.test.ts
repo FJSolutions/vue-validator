@@ -35,8 +35,8 @@ test.group('Tests for the built-in "integer" validator', () => {
       name: ref('Mo'),
       age: ref(0.0),
     }
-    // @ts-ignore
-    model.age = '55'
+    // @ts-ignore 'Invalid value'
+    model.age.value = '55'
     // Rules model
     const rules: Rules<typeof model> = {
       age: {
@@ -78,8 +78,6 @@ test.group('Tests for the built-in "integer" validator', () => {
     assert.isFalse(v.age.isDirty.value)
     assert.exists(v.age.errors)
     assert.equal(v.age.errors.value.length, 1)
-
-    // console.log(v.name.errors[0].toString())
   })
 
   test('failure test with string', async assert => {
@@ -89,7 +87,7 @@ test.group('Tests for the built-in "integer" validator', () => {
       age: ref(55),
     }
     // @ts-ignore
-    model.age = '123.4'
+    model.age.value = '123.4'
     // Rules model
     const rules: Rules<typeof model> = {
       age: {
@@ -105,7 +103,5 @@ test.group('Tests for the built-in "integer" validator', () => {
     assert.isFalse(v.age.isDirty.value)
     assert.exists(v.age.errors)
     assert.equal(v.age.errors.value.length, 1)
-
-    // console.log(v.name.errors[0].toString())
   })
 })
