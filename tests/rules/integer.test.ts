@@ -23,10 +23,10 @@ test.group('Tests for the built-in "integer" validator', () => {
 
     assert.exists(v)
     assert.isTrue(await v.validate())
-    assert.isFalse(v.age.isInvalid.value)
-    assert.isFalse(v.age.isDirty.value)
+    assert.isFalse(v.age.isInvalid)
+    assert.isFalse(v.age.isDirty)
     assert.exists(v.age.errors)
-    assert.equal(v.age.errors.value.length, 0)
+    assert.equal(v.age.errors.length, 0)
   })
 
   test('success test with string', async assert => {
@@ -50,10 +50,10 @@ test.group('Tests for the built-in "integer" validator', () => {
 
     assert.exists(v)
     assert.isTrue(await v.validate())
-    assert.isFalse(v.age.isInvalid.value)
-    assert.isFalse(v.age.isDirty.value)
+    assert.isFalse(v.age.isInvalid)
+    assert.isFalse(v.age.isDirty)
     assert.exists(v.age.errors)
-    assert.equal(v.age.errors.value.length, 0)
+    assert.equal(v.age.errors.length, 0)
   })
 
   test('failure test', async assert => {
@@ -74,10 +74,10 @@ test.group('Tests for the built-in "integer" validator', () => {
 
     // console.log(v)
     assert.isFalse(await v.validate())
-    assert.isTrue(v.age.isInvalid.value)
-    assert.isFalse(v.age.isDirty.value)
+    assert.isTrue(v.age.isInvalid)
+    assert.isFalse(v.age.isDirty)
     assert.exists(v.age.errors)
-    assert.equal(v.age.errors.value.length, 1)
+    assert.equal(v.age.errors.length, 1)
   })
 
   test('failure test with string', async assert => {
@@ -99,9 +99,9 @@ test.group('Tests for the built-in "integer" validator', () => {
 
     // console.log(v)
     assert.isFalse(await v.validate())
-    assert.isTrue(v.age.isInvalid.value)
-    assert.isFalse(v.age.isDirty.value)
+    assert.isTrue(v.age.isInvalid)
+    assert.isFalse(v.age.isDirty)
     assert.exists(v.age.errors)
-    assert.equal(v.age.errors.value.length, 1)
+    assert.equal(v.age.errors.length, 1)
   })
 })

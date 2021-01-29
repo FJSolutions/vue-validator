@@ -21,13 +21,13 @@ test.group('Tests for the built-in "sameAs" validator', () => {
 
     // console.log(v)
 
-    assert.isFalse(v.isInvalid.value)
-    assert.isFalse(v.password.isInvalid.value)
-    assert.isFalse(v.passwordConfirmation.isInvalid.value)
+    assert.isFalse(v.isInvalid)
+    assert.isFalse(v.password.isInvalid)
+    assert.isFalse(v.passwordConfirmation.isInvalid)
     assert.isTrue(await v.validate())
-    assert.isFalse(v.isInvalid.value)
-    assert.isFalse(v.password.isInvalid.value)
-    assert.isFalse(v.passwordConfirmation.isInvalid.value)
+    assert.isFalse(v.isInvalid)
+    assert.isFalse(v.password.isInvalid)
+    assert.isFalse(v.passwordConfirmation.isInvalid)
   })
 
   test('existing invalid value fails', async assert => {
@@ -47,12 +47,12 @@ test.group('Tests for the built-in "sameAs" validator', () => {
 
     // console.log(v)
 
-    assert.isFalse(v.isInvalid.value)
-    assert.isFalse(v.password.isInvalid.value)
-    assert.isFalse(v.passwordConfirmation.isInvalid.value)
+    assert.isFalse(v.isInvalid)
+    assert.isFalse(v.password.isInvalid)
+    assert.isFalse(v.passwordConfirmation.isInvalid)
     assert.isFalse(await v.validate())
-    assert.isFalse(v.isInvalid.value)
-    assert.isTrue(v.password.isInvalid.value)
-    assert.isFalse(v.passwordConfirmation.isInvalid.value)
+    assert.isFalse(v.isInvalid)
+    assert.isTrue(v.password.isInvalid)
+    assert.isFalse(v.passwordConfirmation.isInvalid)
   })
 })

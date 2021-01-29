@@ -1,4 +1,3 @@
-import { Ref } from 'vue';
 /**
  * The type definition of an object that defines the validation riles for a type
  */
@@ -69,7 +68,7 @@ export declare type PropertyRule<T> = {
     rules: {
         [key: string]: RuleValidator<T>;
     };
-    model: any;
+    validationModel: any;
 };
 /*******************************************
  *
@@ -83,15 +82,15 @@ export interface IValidator {
     /**
      * Gets a value indicating if the validator is in an invalid state after the last validation
      */
-    readonly isInvalid: Ref<boolean>;
+    readonly isInvalid: boolean;
     /**
      * Gets a list of errors from the last validation
      */
-    readonly errors: Ref<Array<ValidationError>>;
+    readonly errors: Array<ValidationError>;
     /**
      * Gets a value indicating if there are errors
      */
-    readonly hasErrors: Ref<boolean>;
+    readonly hasErrors: boolean;
     /**
      * Trigger a validation
      *
@@ -106,9 +105,9 @@ export interface IPropertyValidator<T> extends IValidator {
     /**
      * Gets a value indicating if the validator has had its model value set
      */
-    readonly isDirty: Ref<boolean>;
+    readonly isDirty: boolean;
     /**
      * The model object that is being validated
      */
-    readonly model: T;
+    model: T;
 }

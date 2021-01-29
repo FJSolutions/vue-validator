@@ -1,4 +1,4 @@
-import { Ref, ref, computed, watch } from 'vue'
+import { Ref, ref, reactive, computed, watch, ReactiveEffect } from 'vue'
 import {
   GroupRules,
   Rules,
@@ -11,7 +11,7 @@ import {
 } from './types'
 
 /**
- * Wraps making a valid Rules configuration object byt supply ig type information as type parameters to this constructor funvtion
+ * Wraps making a valid Rules configuration object byt supply ig type information as type parameters to this constructor function
  *
  * @param validationDefinition An object literal that confirms to a validation configuration interface
  */
@@ -24,7 +24,7 @@ export const useRulesConstructor = <T, G>(
 }
 
 /**
- * Creates a validator for the supplied model using the rules as a definition
+ * Creates a validator for the supplied using the rules as a definition
  *
  * @param model The model to validate
  * @param rules The rule definitions to validate the model against
@@ -46,9 +46,13 @@ export const useValidator = <T extends { [key: string]: any }, G = {}>(
 
   // Create the list properties as validator objects
   const validatorProperties = propertyRules.map(pv => {
+    // Get the rules for this property
     const propertyRules = validationRules.filter(r => r.propertyName === pv.propertyName)
+
+    // Create the property validator instance
     const po = createPropertyValidator(model, propertyRules, pv.propertyName)
-    Object.defineProperty(v, pv.propertyName, { value: po, enumerable: true, writable: false, configurable: false })
+
+    Object.defineProperty(v, pv.propertyName, { value: po, enumerable: true, configurable: true, writable: true })
 
     return po
   })
@@ -60,9 +64,9 @@ export const useValidator = <T extends { [key: string]: any }, G = {}>(
   createGroupValidator(v, rules, modelKeys, validatorProperties as any)
 
   // Return a strongly typed validator for this configuration
-  return (v as unknown) as IValidator & // A validator
+  return (reactive(v) as unknown) as IValidator & // A validator
     // A property from the model with a validator
-    { [Key in keyof T]: IPropertyValidator<T[Key]> } &
+    { [Key in keyof T]: IPropertyValidator<T[Key] extends Ref<infer R> ? R : T[Key]> } &
     // Group object properties that exposer validators
     {
       // Interface for Interface for the core validator & the validator properties in this group
@@ -95,11 +99,11 @@ const createGroupValidator = <T>(
     const gpv = createGroupPropertyValidator(groupProperties)
 
     groupProperties.forEach(gp => {
-      Object.defineProperty(gpv, gp._propertyName, { value: gp, enumerable: true, writable: false })
+      Object.defineProperty(gpv, gp._propertyName, { value: gp, enumerable: true, configurable: true, writable: true })
     })
 
     // Add the group property with its group-validator to the root-validator
-    Object.defineProperty(v, gn, { value: gpv, enumerable: true, writable: false })
+    Object.defineProperty(v, gn, { value: gpv, enumerable: true, configurable: true, writable: true })
   })
 }
 
@@ -111,7 +115,7 @@ const createGroupPropertyValidator = <T>(validatorProperties: IPropertyValidator
     let isValid = true
     while (i < validatorProperties.length) {
       const vp = validatorProperties[i]
-      if (vp.isInvalid.value) {
+      if (vp.isInvalid) {
         isValid = false
         break
       }
@@ -130,19 +134,19 @@ const createGroupPropertyValidator = <T>(validatorProperties: IPropertyValidator
 
       if (!(await r.validate())) {
         isValid = false
-        errors.value.push(...r.errors.value)
+        errors.value.push(...r.errors)
       }
     }
 
     return isValid
   }
 
-  return {
+  return reactive({
     isInvalid,
     errors,
     hasErrors: computed(() => errors.value && errors.value.length > 0),
     validate,
-  } as IValidator
+  }) as IValidator
 }
 
 const createPropertyValidator = <T extends { [key: string]: any }>(
@@ -153,8 +157,10 @@ const createPropertyValidator = <T extends { [key: string]: any }>(
   const isDirty = ref(false)
   const isPending = ref(false)
   const errors = ref(new Array<ValidationError>())
-  const model: Ref<T> = context[propertyName]
+  const model: Ref<any> = context[propertyName]
   const isInvalid = ref(false)
+
+  // console.log('PropertyValidator.model', context[propertyName])
 
   // Watch for changes to the model
   watch(
@@ -194,7 +200,7 @@ const createPropertyValidator = <T extends { [key: string]: any }>(
     return isValid
   }
 
-  return {
+  return reactive({
     _propertyName: propertyName,
     isDirty: computed(() => isDirty.value),
     isPending: computed(() => isPending.value),
@@ -203,7 +209,7 @@ const createPropertyValidator = <T extends { [key: string]: any }>(
     isInvalid: computed(() => isInvalid.value),
     model,
     validate,
-  }
+  }) as IPropertyValidator<any>
 }
 
 const createValidator = (
@@ -220,7 +226,7 @@ const createValidator = (
     let isValid = true
     while (i < validatorProperties.length) {
       const vp = validatorProperties[i]
-      if (!vp.isInvalid.value) {
+      if (!vp.isInvalid) {
         isValid = false
         break
       }
@@ -242,7 +248,7 @@ const createValidator = (
 
       if (!(await property.validate())) {
         isValid = false
-        errors.value.push(...property.errors.value)
+        errors.value.push(...property.errors)
       }
     }
 
@@ -252,19 +258,19 @@ const createValidator = (
   }
 
   Object.defineProperty(v, 'isInvalid', {
-    value: computed(() => isInvalid.value),
+    value: isInvalid,
     enumerable: true,
-    writable: false,
-    configurable: false,
+    configurable: true,
+    writable: true,
   })
   Object.defineProperty(v, 'errors', {
     value: computed(() => errors.value),
     enumerable: true,
-    writable: false,
-    configurable: false,
+    configurable: true,
+    writable: true,
   })
-  Object.defineProperty(v, 'hasErrors', { value: hasErrors, enumerable: true, writable: false, configurable: false })
-  Object.defineProperty(v, 'validate', { value: validate, enumerable: true, writable: false, configurable: false })
+  Object.defineProperty(v, 'hasErrors', { value: hasErrors, enumerable: true, configurable: true, writable: true })
+  Object.defineProperty(v, 'validate', { value: validate, enumerable: true, configurable: true, writable: true })
 }
 
 const setPropertyRules = <T, G>(
@@ -281,12 +287,12 @@ const setPropertyRules = <T, G>(
       [key: string]: RuleValidator<any>
     }
     // Create a new property validator
-    const pv = {
+    const pv: PropertyRule<any> = {
       propertyName: key,
       propertyModel: descriptors[key] as Ref<any>,
       rules: ruleObj,
-      model,
-    } as PropertyRule<any>
+      validationModel: model,
+    }
 
     return pv
   })
