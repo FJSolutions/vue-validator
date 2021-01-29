@@ -1,4 +1,3 @@
-import { isMethodDeclaration } from 'typescript'
 import { Ref, ref, computed, watch } from 'vue'
 import {
   GroupRules,
@@ -10,8 +9,12 @@ import {
   IPropertyValidator,
   PropertyRule,
 } from './types'
-import { GroupValidator } from './Validator'
 
+/**
+ * Wraps making a valid Rules configuration object byt supply ig type information as type parameters to this constructor funvtion
+ *
+ * @param validationDefinition An object literal that confirms to a validation configuration interface
+ */
 export const useRulesConstructor = <T, G>(
   validationDefinition: { [Key1 in keyof T]?: { [validatorName: string]: RuleValidator<T[Key1]> } } &
     // & { [groupName: string]: (keyof T)[]}
@@ -41,6 +44,7 @@ export const useValidator = <T extends { [key: string]: any }, G = {}>(
   // The master list of property validators
   const propertyRules = setPropertyRules(model, rules, descriptors, modelKeys)
 
+  // Create the list properties as validator objects
   const validatorProperties = propertyRules.map(pv => {
     const propertyRules = validationRules.filter(r => r.propertyName === pv.propertyName)
     const po = createPropertyValidator(model, propertyRules, pv.propertyName)
@@ -49,18 +53,21 @@ export const useValidator = <T extends { [key: string]: any }, G = {}>(
     return po
   })
 
+  // Create the root validator
   createValidator(v as any, propertyRules, validatorProperties)
 
-  // TODO: Create group validator
+  // Create group validator
   createGroupValidator(v, rules, modelKeys, validatorProperties as any)
 
-  // console.log(v)
-
+  // Return a strongly typed validator for this configuration
   return (v as unknown) as IValidator & // A validator
     // A property from the model with a validator
     { [Key in keyof T]: IPropertyValidator<T[Key]> } &
     // Group object properties that exposer validators
-    { [key in keyof G]: IValidator }
+    {
+      // Interface for Interface for the core validator & the validator properties in this group
+      [key in keyof G]: IValidator & { [key: string]: IValidator }
+    }
 }
 
 /******************************************
@@ -94,8 +101,6 @@ const createGroupValidator = <T>(
     // Add the group property with its group-validator to the root-validator
     Object.defineProperty(v, gn, { value: gpv, enumerable: true, writable: false })
   })
-
-  // console.log(v)
 }
 
 const createGroupPropertyValidator = <T>(validatorProperties: IPropertyValidator<T>[]) => {
@@ -106,8 +111,6 @@ const createGroupPropertyValidator = <T>(validatorProperties: IPropertyValidator
     let isValid = true
     while (i < validatorProperties.length) {
       const vp = validatorProperties[i]
-      // // @ts-ignore
-      // console.log(vp._propertyName, vp.isInvalid.value)
       if (vp.isInvalid.value) {
         isValid = false
         break
@@ -288,8 +291,6 @@ const setPropertyRules = <T, G>(
     return pv
   })
 
-  // console.log(propertyValidators)
-
   return propertyValidators
 }
 
@@ -305,8 +306,6 @@ const getValidationRules = <T, G>(modelKeys: string[], rules: Rules<T & { [key: 
       })
     }
   })
-
-  // console.log(validationRules)
 
   return validationRules
 }

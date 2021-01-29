@@ -27,6 +27,7 @@ test.group('Tests the ValidatorFactory implementation', () => {
     // console.log('useValidator:', v)
 
     assert.exists(v)
+    // Property watcher assertions
     assert.isFalse(v.isInvalid.value)
     assert.isFalse(v.hasErrors.value)
     assert.deepEqual(v.errors.value.length, 0)
@@ -84,6 +85,7 @@ test.group('Tests the ValidatorFactory implementation', () => {
     // console.log('useValidator:', v)
 
     assert.exists(v)
+    // Root model assertions
     assert.isFalse(v.name.isInvalid.value)
     assert.isFalse(v.name.isDirty.value)
     assert.isFalse(await v.name.validate())
@@ -117,43 +119,27 @@ test.group('Tests the ValidatorFactory implementation', () => {
       },
       personGroup: ['name', 'age'],
       addressGroup: ['address'],
-      // group7: [],
-      // group3: ['name'],
-      // group1: ['name', 'age'],
-      // group7: ['address'],
-      // group1: ['name', 'age'],
     })
-    // as GroupRules<typeof model> //, IGroup<typeof model>>
     // Create the validator
     const v = useValidator(model, rules)
 
-    // console.log(v.personGroup.isInvalid.value)
-    // console.log(v.addressGroup.isInvalid.value)
-
     assert.exists(v)
+    // Group assertions
     assert.exists(v.personGroup)
-    // @ts-ignore
     assert.exists(v.personGroup.name)
-    // @ts-ignore
     assert.exists(v.personGroup.age)
-    // @ts-ignore
     assert.notExists(v.personGroup.address)
     assert.isFalse(v.personGroup.isInvalid.value)
-    // @ts-ignore
     assert.isFalse(v.personGroup.name.isInvalid.value)
-    // @ts-ignore
     assert.isFalse(v.personGroup.age.isInvalid.value)
     assert.isFalse(await v.personGroup.validate())
-    // @ts-ignore
     assert.isTrue(v.personGroup.name.isInvalid.value)
-    // @ts-ignore
     assert.isFalse(v.personGroup.age.isInvalid.value)
     assert.isTrue(v.personGroup.isInvalid.value)
     assert.exists(v.address)
     assert.isFalse(v.addressGroup.isInvalid.value)
     assert.isTrue(await v.addressGroup.validate())
     assert.isFalse(v.addressGroup.isInvalid.value)
-    // @ts-ignore
     assert.isFalse(v.addressGroup.address.isInvalid.value)
   })
 })
