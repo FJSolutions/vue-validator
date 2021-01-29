@@ -1,83 +1,26 @@
-import { PropertyValidator, Validator, GroupValidator, } from './Validator';
-/**
- * Creates a validation object for the supplied model based on the supplied rules
- *
- * @param model The model object to validate
- * @param rules The object that defines the validations for a model
- */
-export const useValidator = (model, rules) => {
-    // Get the property structure for the model
-    const descriptors = Object.getOwnPropertyDescriptors(model);
-    const modelKeys = Object.keys(descriptors);
-    const validationRules = new Array();
-    modelKeys.forEach(propertyName => {
-        var _a;
-        const pr = (_a = Object.getOwnPropertyDescriptor(rules, propertyName)) === null || _a === void 0 ? void 0 : _a.value;
-        if (pr) {
-            Object.keys(pr).forEach(ruleName => {
-                const vr = { propertyName, ruleName, rule: pr[ruleName] };
-                validationRules.push(vr);
-            });
-        }
-    });
-    // console.log(validationRules)
-    // The master list of property validators
-    const propertyValidators = modelKeys.map(key => {
-        var _a;
-        // Find the property's rule validator
-        const rule = (_a = Object.getOwnPropertyDescriptor(rules, key)) === null || _a === void 0 ? void 0 : _a.value;
-        // Create a new property validator
-        const pv = new PropertyValidator(key, descriptors[key], rule, model);
-        return pv;
-    });
-    // console.log(propertyValidators)
-    // Create a Groups object
-    const groupObject = {};
-    Object.keys(rules)
-        .filter(key => {
-        for (let i = 0; i < propertyValidators.length; i++) {
-            const vr = propertyValidators[i];
-            if (vr.PropertyName === key) {
-                return false;
-            }
-        }
-        return true;
-    })
-        .map(key => {
-        var _a;
-        return {
-            groupName: key,
-            propertyNames: (_a = Object.getOwnPropertyDescriptor(rules, key)) === null || _a === void 0 ? void 0 : _a.value,
-        };
-    })
-        // .filter(o => typeof o !== 'undefined')
-        .forEach((gp) => {
-        const vRules = new Array();
-        gp.propertyNames.forEach((propertyName) => {
-            const vr = propertyValidators.find(vr => vr.PropertyName === propertyName);
-            if (vr) {
-                vRules.push(vr);
-            }
-        });
-        const group = Object.defineProperty(groupObject, gp.groupName, {
-            value: new GroupValidator(vRules),
-            enumerable: true,
-            writable: false,
-        });
-    });
-    // console.log('Group Object: ', groupObject)
-    // Create the validation object and add the validation properties
-    const v = new Validator(propertyValidators, groupObject);
-    propertyValidators.forEach(pv => {
-        // Add a property to the main validation object
-        Object.defineProperty(v, pv.PropertyName, {
-            configurable: false,
-            enumerable: true,
-            writable: false,
-            value: pv,
-        });
-    });
-    // const ro = (v as unknown) as ValidatorType
-    // console.log(ro.groups)
-    return v;
-};
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sameAs = exports.required = exports.numeric = exports.minValue = exports.minLength = exports.maxValue = exports.maxLength = exports.lengthBetween = exports.isAlphaNumeric = exports.isAlpha = exports.integer = exports.emailAddress = exports.decimal = exports.containsUpperOrLowerCase = exports.containsUpperCase = exports.containsSymbol = exports.containsLowerCase = exports.containsDigit = exports.betweenValues = exports.useRulesConstructor = exports.useValidator = void 0;
+var validator_factory_1 = require("./validator-factory");
+Object.defineProperty(exports, "useValidator", { enumerable: true, get: function () { return validator_factory_1.useValidator; } });
+Object.defineProperty(exports, "useRulesConstructor", { enumerable: true, get: function () { return validator_factory_1.useRulesConstructor; } });
+var rules_1 = require("./rules");
+Object.defineProperty(exports, "betweenValues", { enumerable: true, get: function () { return rules_1.betweenValues; } });
+Object.defineProperty(exports, "containsDigit", { enumerable: true, get: function () { return rules_1.containsDigit; } });
+Object.defineProperty(exports, "containsLowerCase", { enumerable: true, get: function () { return rules_1.containsLowerCase; } });
+Object.defineProperty(exports, "containsSymbol", { enumerable: true, get: function () { return rules_1.containsSymbol; } });
+Object.defineProperty(exports, "containsUpperCase", { enumerable: true, get: function () { return rules_1.containsUpperCase; } });
+Object.defineProperty(exports, "containsUpperOrLowerCase", { enumerable: true, get: function () { return rules_1.containsUpperOrLowerCase; } });
+Object.defineProperty(exports, "decimal", { enumerable: true, get: function () { return rules_1.decimal; } });
+Object.defineProperty(exports, "emailAddress", { enumerable: true, get: function () { return rules_1.emailAddress; } });
+Object.defineProperty(exports, "integer", { enumerable: true, get: function () { return rules_1.integer; } });
+Object.defineProperty(exports, "isAlpha", { enumerable: true, get: function () { return rules_1.isAlpha; } });
+Object.defineProperty(exports, "isAlphaNumeric", { enumerable: true, get: function () { return rules_1.isAlphaNumeric; } });
+Object.defineProperty(exports, "lengthBetween", { enumerable: true, get: function () { return rules_1.lengthBetween; } });
+Object.defineProperty(exports, "maxLength", { enumerable: true, get: function () { return rules_1.maxLength; } });
+Object.defineProperty(exports, "maxValue", { enumerable: true, get: function () { return rules_1.maxValue; } });
+Object.defineProperty(exports, "minLength", { enumerable: true, get: function () { return rules_1.minLength; } });
+Object.defineProperty(exports, "minValue", { enumerable: true, get: function () { return rules_1.minValue; } });
+Object.defineProperty(exports, "numeric", { enumerable: true, get: function () { return rules_1.numeric; } });
+Object.defineProperty(exports, "required", { enumerable: true, get: function () { return rules_1.required; } });
+Object.defineProperty(exports, "sameAs", { enumerable: true, get: function () { return rules_1.sameAs; } });

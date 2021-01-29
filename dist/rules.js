@@ -1,10 +1,14 @@
-import { isRef } from 'vue';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.betweenValues = exports.maxValue = exports.minValue = exports.numeric = exports.decimal = exports.integer = exports.isAlphaNumeric = exports.isAlpha = exports.sameAs = exports.emailAddress = exports.lengthBetween = exports.maxLength = exports.minLength = exports.required = exports.containsSymbol = exports.containsDigit = exports.containsUpperOrLowerCase = exports.containsUpperCase = exports.containsLowerCase = void 0;
+const vue_1 = require("vue");
+const helpers_1 = require("./helpers");
 /*****************************************
  *
  * Helper functions
  *
  ****************************************/
-export const containsLowerCase = (value, numberOfOccurrences = 1) => {
+const containsLowerCase = (value, numberOfOccurrences = 1) => {
     if (!value) {
         return false;
     }
@@ -21,7 +25,8 @@ export const containsLowerCase = (value, numberOfOccurrences = 1) => {
         return true;
     return false;
 };
-export const containsUpperCase = (value, numberOfOccurrences = 1) => {
+exports.containsLowerCase = containsLowerCase;
+const containsUpperCase = (value, numberOfOccurrences = 1) => {
     if (!value) {
         return false;
     }
@@ -38,7 +43,8 @@ export const containsUpperCase = (value, numberOfOccurrences = 1) => {
         return true;
     return false;
 };
-export const containsUpperOrLowerCase = (value, numberOfOccurrences = 1) => {
+exports.containsUpperCase = containsUpperCase;
+const containsUpperOrLowerCase = (value, numberOfOccurrences = 1) => {
     if (!value) {
         return false;
     }
@@ -58,7 +64,8 @@ export const containsUpperOrLowerCase = (value, numberOfOccurrences = 1) => {
         return true;
     return false;
 };
-export const containsDigit = (value, numberOfOccurrences = 1) => {
+exports.containsUpperOrLowerCase = containsUpperOrLowerCase;
+const containsDigit = (value, numberOfOccurrences = 1) => {
     if (!value) {
         return false;
     }
@@ -75,7 +82,8 @@ export const containsDigit = (value, numberOfOccurrences = 1) => {
         return true;
     return false;
 };
-export const containsSymbol = (value, numberOfOccurrences = 1, symbols = [
+exports.containsDigit = containsDigit;
+const containsSymbol = (value, numberOfOccurrences = 1, symbols = [
     '~',
     '`',
     '!',
@@ -126,6 +134,7 @@ export const containsSymbol = (value, numberOfOccurrences = 1, symbols = [
         return true;
     return false;
 };
+exports.containsSymbol = containsSymbol;
 /****************************************
  *
  * String Rule validators
@@ -134,75 +143,78 @@ export const containsSymbol = (value, numberOfOccurrences = 1, symbols = [
 const emailRegex = /^(?:[A-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9]{2,}(?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/;
 const alphaRegex = /(?:^[a-zA-Z]+$)/;
 const alphaNumericRegex = /(?:^[a-zA-Z0-9]+)$/;
-export const required = {
+exports.required = {
     ruleName: 'required',
     message: 'Some text is required',
     validator: value => {
-        const rawValue = isRef(value) ? value.value : value;
+        const rawValue = vue_1.isRef(value) ? value.value : value;
         return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length > 0);
     },
 };
-export const minLength = (min) => {
+const minLength = (min) => {
     return {
         ruleName: 'minimum length',
         message: `The text must be at least ${min} letters long`,
         params: [min],
         validator: value => {
-            const rawValue = isRef(value) ? value.value : value;
+            const rawValue = vue_1.isRef(value) ? value.value : value;
             return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length >= min);
         },
     };
 };
-export const maxLength = (max) => {
+exports.minLength = minLength;
+const maxLength = (max) => {
     return {
         ruleName: 'maximum length',
         message: `The text must not be longer than ${max} letters long`,
         params: [max],
         validator: value => {
-            const rawValue = isRef(value) ? value.value : value;
+            const rawValue = vue_1.isRef(value) ? value.value : value;
             return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length <= max);
         },
     };
 };
-export const lengthBetween = (min, max) => {
+exports.maxLength = maxLength;
+const lengthBetween = (min, max) => {
     return {
         ruleName: 'length between',
         message: `The text must be between ${min} and ${max} letters long`,
         params: [min, max],
         validator: value => {
-            const rawValue = isRef(value) ? value.value : value;
+            const rawValue = vue_1.isRef(value) ? value.value : value;
             return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length >= min && rawValue.length <= max);
         },
     };
 };
-export const emailAddress = {
+exports.lengthBetween = lengthBetween;
+exports.emailAddress = {
     ruleName: 'email address',
     message: 'The text does not appear to be a valid email address',
     validator: value => {
-        const rawValue = isRef(value) ? value.value : value;
+        const rawValue = vue_1.isRef(value) ? value.value : value;
         return Promise.resolve(emailRegex.test(rawValue));
     },
 };
-export const sameAs = (propertyName) => {
+const sameAs = (propertyName) => {
     return {
         ruleName: 'same as',
         message: `The text is not the same as ${propertyName}`,
         params: [propertyName],
         validator: (value, context) => {
-            const otherValue = isRef(context === null || context === void 0 ? void 0 : context[propertyName])
-                ? context === null || context === void 0 ? void 0 : context[propertyName].value : context === null || context === void 0 ? void 0 : context[propertyName];
-            const rawValue = isRef(value) ? value.value : value;
+            const otherValue = helpers_1.unwrap(context === null || context === void 0 ? void 0 : context[propertyName]);
+            const rawValue = helpers_1.unwrap(value);
             // console.log('sameAs()', rawValue, otherValue)
             return Promise.resolve(rawValue === otherValue);
         },
     };
 };
-export const isAlpha = {
+exports.sameAs = sameAs;
+exports.isAlpha = {
     ruleName: 'same as',
     message: `The text contains non-alphabetic letters`,
     params: [],
-    validator: value => {
-        const rawValue = String(isRef(value) ? value.value : value) || '';
+    validator: (value) => {
+        const rawValue = String(value) || '';
         let isValid = true;
         for (let i = 0; i < rawValue.length; i++) {
             const c = rawValue[i];
@@ -219,12 +231,12 @@ export const isAlpha = {
         return Promise.resolve(isValid);
     },
 };
-export const isAlphaNumeric = {
+exports.isAlphaNumeric = {
     ruleName: 'same as',
     message: `The text contains non-alphabetic letters`,
     params: [],
     validator: value => {
-        const rawValue = String(isRef(value) ? value.value : value) || '';
+        const rawValue = String(vue_1.isRef(value) ? value.value : value) || '';
         let isValid = true;
         for (let i = 0; i < rawValue.length; i++) {
             const c = rawValue[i];
@@ -252,60 +264,63 @@ export const isAlphaNumeric = {
 const intRegex = /(?:^[-+]?[0-9]+$)/;
 const decimalRegex = /(?:^[-+]?[0-9]+)(?:(?:\.[0-9]+)|(?:e[+-]?[0-9]+))$/;
 const numericRegex = /(?:^[-+]?[0-9]+)(?:(?:\.[0-9]+)|(?:e[+-]?[0-9]+))?$/;
-export const integer = {
+exports.integer = {
     ruleName: 'integer number',
     message: 'The number does not appear to be a valid integer',
     validator: value => {
-        const rawValue = String(isRef(value) ? value.value : value);
+        const rawValue = String(helpers_1.unwrap(value));
         return Promise.resolve(intRegex.test(rawValue));
     },
 };
-export const decimal = {
+exports.decimal = {
     ruleName: 'decimal number',
     message: 'The number does not appear to be in a valid decimal format',
     validator: value => {
-        const rawValue = String(isRef(value) ? value.value : value);
+        const rawValue = String(helpers_1.unwrap(value));
         return Promise.resolve(decimalRegex.test(rawValue));
     },
 };
-export const numeric = {
+exports.numeric = {
     ruleName: 'numeric',
     message: 'The number does not appear to be a valid number',
     validator: value => {
-        const rawValue = String(isRef(value) ? value.value : value);
+        const rawValue = String(helpers_1.unwrap(value));
         return Promise.resolve(numericRegex.test(rawValue));
     },
 };
-export const minValue = (min) => {
+const minValue = (min) => {
     return {
         ruleName: 'minimum value',
         message: `The number must be at least ${min}`,
         params: [min],
         validator: value => {
-            const rawValue = isRef(value) ? value.value : value;
+            const rawValue = parseFloat(helpers_1.unwrap(value));
             return Promise.resolve(typeof rawValue !== 'undefined' && rawValue >= min);
         },
     };
 };
-export const maxValue = (max) => {
+exports.minValue = minValue;
+const maxValue = (max) => {
     return {
         ruleName: 'maximum value',
         message: `The number must be at less than ${max}`,
         params: [max],
         validator: value => {
-            const rawValue = isRef(value) ? value.value : value;
+            const rawValue = vue_1.isRef(value) ? value.value : value;
             return Promise.resolve(typeof rawValue !== 'undefined' && rawValue <= max);
         },
     };
 };
-export const betweenValues = (min, max) => {
+exports.maxValue = maxValue;
+const betweenValues = (min, max) => {
     return {
         ruleName: 'maximum value',
         message: `The number must be between ${min} and ${max}`,
         params: [min, max],
         validator: value => {
-            const rawValue = isRef(value) ? value.value : value;
+            const rawValue = vue_1.isRef(value) ? value.value : value;
             return Promise.resolve(typeof rawValue !== 'undefined' && rawValue >= min && rawValue <= max);
         },
     };
 };
+exports.betweenValues = betweenValues;
