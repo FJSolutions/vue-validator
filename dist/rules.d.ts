@@ -5,11 +5,11 @@ import { RuleValidator } from './types';
  * Helper functions
  *
  ****************************************/
-export declare const containsLowerCase: (value: string, numberOfOccurrences?: number) => boolean;
-export declare const containsUpperCase: (value: string, numberOfOccurrences?: number) => boolean;
-export declare const containsUpperOrLowerCase: (value: string, numberOfOccurrences?: number) => boolean;
-export declare const containsDigit: (value: string, numberOfOccurrences?: number) => boolean;
-export declare const containsSymbol: (value: string, numberOfOccurrences?: number, symbols?: string[]) => boolean;
+export declare const containsLowerCase: (numberOfOccurrences?: number) => RuleValidator<string>;
+export declare const containsUpperCase: (numberOfOccurrences?: number) => RuleValidator<string>;
+export declare const containsUpperOrLowerCase: (numberOfOccurrences?: number) => RuleValidator<string>;
+export declare const containsDigit: (numberOfOccurrences?: number) => RuleValidator<string>;
+export declare const containsSymbol: (numberOfOccurrences?: number, symbols?: string[]) => RuleValidator<string>;
 export declare const required: RuleValidator<string | Ref<string>>;
 export declare const minLength: (min: number) => RuleValidator<string | Ref<string>>;
 export declare const maxLength: (max: number) => RuleValidator<string | Ref<string>>;

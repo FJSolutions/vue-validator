@@ -5,78 +5,102 @@ import { unwrap } from './helpers';
  * Helper functions
  *
  ****************************************/
-export const containsLowerCase = (value, numberOfOccurrences = 1) => {
-    if (!value) {
-        return false;
-    }
-    let count = 0;
-    for (let i = 0; i < value.length; i++) {
-        if (count >= numberOfOccurrences)
-            return true;
-        const c = value.charAt(i);
-        if (c == c.toLocaleLowerCase()) {
-            count += 1;
-        }
-    }
-    if (count >= numberOfOccurrences)
-        return true;
-    return false;
+export const containsLowerCase = (numberOfOccurrences = 1) => {
+    return {
+        ruleName: 'contains lower case',
+        message: `The text must contain at least ${numberOfOccurrences} lower case letters`,
+        validator: (value) => {
+            if (!value) {
+                return Promise.resolve(false);
+            }
+            let count = 0;
+            for (let i = 0; i < value.length; i++) {
+                if (count >= numberOfOccurrences)
+                    return Promise.resolve(true);
+                const c = value.charAt(i);
+                if (c == c.toLocaleLowerCase()) {
+                    count += 1;
+                }
+            }
+            if (count >= numberOfOccurrences)
+                return Promise.resolve(true);
+            return Promise.resolve(false);
+        },
+    };
 };
-export const containsUpperCase = (value, numberOfOccurrences = 1) => {
-    if (!value) {
-        return false;
-    }
-    let count = 0;
-    for (let i = 0; i < value.length; i++) {
-        if (count >= numberOfOccurrences)
-            return true;
-        const c = value.charAt(i);
-        if (c == c.toLocaleUpperCase()) {
-            count += 1;
-        }
-    }
-    if (count >= numberOfOccurrences)
-        return true;
-    return false;
+export const containsUpperCase = (numberOfOccurrences = 1) => {
+    return {
+        ruleName: 'contains upper case',
+        message: `The text must contain at least ${numberOfOccurrences} upper case letters`,
+        validator: (value) => {
+            if (!value) {
+                return Promise.resolve(false);
+            }
+            let count = 0;
+            for (let i = 0; i < value.length; i++) {
+                if (count >= numberOfOccurrences)
+                    return Promise.resolve(true);
+                const c = value.charAt(i);
+                if (c == c.toLocaleUpperCase()) {
+                    count += 1;
+                }
+            }
+            if (count >= numberOfOccurrences)
+                return Promise.resolve(true);
+            return Promise.resolve(false);
+        },
+    };
 };
-export const containsUpperOrLowerCase = (value, numberOfOccurrences = 1) => {
-    if (!value) {
-        return false;
-    }
-    let count = 0;
-    for (let i = 0; i < value.length; i++) {
-        if (count >= numberOfOccurrences)
-            return true;
-        const c = value.charAt(i);
-        if (c == c.toLocaleUpperCase()) {
-            count += 1;
-        }
-        else if (c == c.toLocaleUpperCase()) {
-            count += 1;
-        }
-    }
-    if (count >= numberOfOccurrences)
-        return true;
-    return false;
+export const containsUpperOrLowerCase = (numberOfOccurrences = 1) => {
+    return {
+        ruleName: 'contains upper or lower case',
+        message: `The text must contain at least ${numberOfOccurrences} upper or lower case letters`,
+        validator: (value) => {
+            if (!value) {
+                return Promise.resolve(false);
+            }
+            let count = 0;
+            for (let i = 0; i < value.length; i++) {
+                if (count >= numberOfOccurrences)
+                    return Promise.resolve(true);
+                const c = value.charAt(i);
+                if (c == c.toLocaleUpperCase()) {
+                    count += 1;
+                }
+                else if (c == c.toLocaleUpperCase()) {
+                    count += 1;
+                }
+            }
+            if (count >= numberOfOccurrences)
+                return Promise.resolve(true);
+            return Promise.resolve(false);
+        },
+    };
 };
-export const containsDigit = (value, numberOfOccurrences = 1) => {
-    if (!value) {
-        return false;
-    }
-    let count = 0;
-    for (let i = 0; i < value.length; i++) {
-        if (count >= numberOfOccurrences)
-            return true;
-        const c = value.charAt(i);
-        if (c >= '0' && c <= '9') {
-            count += 1;
-        }
-    }
-    if (count >= numberOfOccurrences)
-        return true;
-    return false;
+export const containsDigit = (numberOfOccurrences = 1) => {
+    return {
+        ruleName: 'contains digits',
+        message: `The text must contain at least ${numberOfOccurrences} numbers`,
+        validator: (value) => {
+            if (!value) {
+                return Promise.resolve(false);
+            }
+            let count = 0;
+            for (let i = 0; i < value.length; i++) {
+                if (count >= numberOfOccurrences)
+                    return Promise.resolve(true);
+                const c = value.charAt(i);
+                if (c >= '0' && c <= '9') {
+                    count += 1;
+                }
+            }
+            if (count >= numberOfOccurrences)
+                return Promise.resolve(true);
+            return Promise.resolve(false);
+        },
+    };
 };
-export const containsSymbol = (value, numberOfOccurrences = 1, symbols = [
+export const containsSymbol = (numberOfOccurrences = 1, symbols = [
     '~',
     '`',
     '!',
@@ -111,21 +135,27 @@ export const containsSymbol = (value, numberOfOccurrences = 1, symbols = [
     '?',
     '/',
 ]) => {
-    if (!value) {
-        return false;
-    }
-    let count = 0;
-    for (let i = 0; i < value.length; i++) {
-        if (count >= numberOfOccurrences)
-            return true;
-        const c = value.charAt(i);
-        if (symbols.some(s => s === c)) {
-            count += 1;
-        }
-    }
-    if (count >= numberOfOccurrences)
-        return true;
-    return false;
+    return {
+        ruleName: 'contains symbol characters',
+        message: `The text must contain at least ${numberOfOccurrences} symbol characters`,
+        validator: (value) => {
+            if (!value) {
+                return Promise.resolve(false);
+            }
+            let count = 0;
+            for (let i = 0; i < value.length; i++) {
+                if (count >= numberOfOccurrences)
+                    return Promise.resolve(true);
+                const c = value.charAt(i);
+                if (symbols.some(s => s === c)) {
+                    count += 1;
+                }
+            }
+            if (count >= numberOfOccurrences)
+                return Promise.resolve(true);
+            return Promise.resolve(false);
+        },
+    };
 };
 /****************************************
  *

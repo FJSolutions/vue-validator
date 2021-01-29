@@ -1,133 +1,128 @@
 import test from 'japa'
-import {
-  containsDigit,
-  containsLowerCase,
-  containsSymbol,
-  containsUpperCase,
-} from '../../src/rules'
+import { containsDigit, containsLowerCase, containsSymbol, containsUpperCase } from '../../src/rules'
 
 test.group('Tests the helper functions that check the kind of content in a string value', () => {
   // Lower case checks
 
-  test('check for lowercase (success)', assert => {
+  test('check for lowercase (success)', async assert => {
     const password = 'PASSWoRD'
 
-    assert.isTrue(containsLowerCase(password))
+    assert.isTrue(await containsLowerCase().validator(password))
   })
 
-  test('check for lowercase (failure)', assert => {
+  test('check for lowercase (failure)', async assert => {
     const password = 'PASSWORD'
 
-    assert.isFalse(containsLowerCase(password))
+    assert.isFalse(await containsLowerCase().validator(password))
   })
 
-  test('check for multiple LowerCase (success)', assert => {
+  test('check for multiple LowerCase (success)', async assert => {
     const password = 'PaSSWoRD'
 
-    assert.isTrue(containsLowerCase(password, 2))
+    assert.isTrue(await containsLowerCase(2).validator(password))
   })
 
-  test('check for multiple LowerCase (failure)', assert => {
+  test('check for multiple LowerCase (failure)', async assert => {
     const password = 'PASSWoRD'
 
-    assert.isFalse(containsLowerCase(password, 2))
+    assert.isFalse(await containsLowerCase(2).validator(password))
   })
 
-  test('check for lowercase (undefined failure)', assert => {
+  test('check for lowercase (undefined failure)', async assert => {
     // @ts-ignore
-    assert.isFalse(containsLowerCase(undefined))
+    assert.isFalse(await containsLowerCase().validator(undefined))
   })
 
   // Upper case checks
 
-  test('check for UpperCase (success)', assert => {
+  test('check for UpperCase (success)', async assert => {
     const password = 'PASSWoRD'
 
-    assert.isTrue(containsUpperCase(password))
+    assert.isTrue(await containsUpperCase().validator(password))
   })
 
-  test('check for UpperCase (failure)', assert => {
+  test('check for UpperCase (failure)', async assert => {
     const password = 'password'
 
-    assert.isFalse(containsUpperCase(password))
+    assert.isFalse(await containsUpperCase().validator(password))
   })
 
-  test('check for multiple UpperCase (success)', assert => {
+  test('check for multiple UpperCase (success)', async assert => {
     const password = 'PassworD'
 
-    assert.isTrue(containsUpperCase(password, 2))
+    assert.isTrue(await containsUpperCase(2).validator(password))
   })
 
-  test('check for multiple UpperCase (failure)', assert => {
+  test('check for multiple UpperCase (failure)', async assert => {
     const password = 'passwoRd'
 
-    assert.isFalse(containsUpperCase(password, 2))
+    assert.isFalse(await containsUpperCase(2).validator(password))
   })
 
-  test('check for UpperCase (undefined failure)', assert => {
+  test('check for UpperCase (undefined failure)', async assert => {
     // @ts-ignore
-    assert.isFalse(containsUpperCase(undefined))
+    assert.isFalse(await containsUpperCase().validator(undefined))
   })
 
   // Digit checks
 
-  test('check for Digit (success)', assert => {
+  test('check for Digit (success)', async assert => {
     const password = 'PA33WoRD'
 
-    assert.isTrue(containsDigit(password))
+    assert.isTrue(await containsDigit().validator(password))
   })
 
-  test('check for Digit (failure)', assert => {
+  test('check for Digit (failure)', async assert => {
     const password = 'paSSword'
 
-    assert.isFalse(containsDigit(password))
+    assert.isFalse(await containsDigit().validator(password))
   })
 
-  test('check for multiple Digit (success)', assert => {
+  test('check for multiple Digit (success)', async assert => {
     const password = 'PassworD123'
 
-    assert.isTrue(containsDigit(password, 2))
+    assert.isTrue(await containsDigit(2).validator(password))
   })
 
-  test('check for multiple Digit (failure)', assert => {
+  test('check for multiple Digit (failure)', async assert => {
     const password = 'passwoRd1'
 
-    assert.isFalse(containsDigit(password, 2))
+    assert.isFalse(await containsDigit(2).validator(password))
   })
 
-  test('check for Digit (undefined failure)', assert => {
+  test('check for Digit (undefined failure)', async assert => {
     // @ts-ignore
-    assert.isFalse(containsDigit(undefined))
+    assert.isFalse(await containsDigit().validator(undefined))
   })
 
   // Symbol checks
 
-  test('check for Symbol (success)', assert => {
+  test('check for Symbol (success)', async assert => {
     const password = 'PA$$WoRD'
 
-    assert.isTrue(containsSymbol(password))
+    assert.isTrue(await containsSymbol().validator(password))
   })
 
-  test('check for Symbol (failure)', assert => {
+  test('check for Symbol (failure)', async assert => {
     const password = 'paSSword2'
 
-    assert.isFalse(containsSymbol(password))
+    assert.isFalse(await containsSymbol().validator(password))
   })
 
-  test('check for multiple Symbol (success)', assert => {
+  test('check for multiple Symbol (success)', async assert => {
     const password = 'P@ssworD$'
 
-    assert.isTrue(containsSymbol(password, 2))
+    assert.isTrue(await containsSymbol(2).validator(password))
   })
 
-  test('check for multiple Symbol (failure)', assert => {
+  test('check for multiple Symbol (failure)', async assert => {
     const password = 'p@sswoRd1'
 
-    assert.isFalse(containsSymbol(password, 2))
+    assert.isFalse(await containsSymbol(2).validator(password))
   })
 
-  test('check for Symbol (undefined failure)', assert => {
+  test('check for Symbol (undefined failure)', async assert => {
     // @ts-ignore
-    assert.isFalse(containsSymbol(undefined))
+    assert.isFalse(await containsSymbol().validator(undefined))
   })
 })

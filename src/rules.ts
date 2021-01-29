@@ -1,4 +1,3 @@
-import { createLogicalAnd } from 'typescript'
 import { Ref, isRef } from 'vue'
 import { unwrap } from './helpers'
 import { RuleValidator } from './types'
@@ -9,88 +8,110 @@ import { RuleValidator } from './types'
  *
  ****************************************/
 
-export const containsLowerCase = (value: string, numberOfOccurrences = 1) => {
-  if (!value) {
-    return false
-  }
+export const containsLowerCase = (numberOfOccurrences = 1) => {
+  return {
+    ruleName: 'contains lower case',
+    message: `The text must contain at least ${numberOfOccurrences} lower case letters`,
+    validator: (value: string) => {
+      if (!value) {
+        return Promise.resolve(false)
+      }
 
-  let count = 0
-  for (let i = 0; i < value.length; i++) {
-    if (count >= numberOfOccurrences) return true
+      let count = 0
+      for (let i = 0; i < value.length; i++) {
+        if (count >= numberOfOccurrences) return Promise.resolve(true)
 
-    const c = value.charAt(i)
-    if (c == c.toLocaleLowerCase()) {
-      count += 1
-    }
-  }
+        const c = value.charAt(i)
+        if (c == c.toLocaleLowerCase()) {
+          count += 1
+        }
+      }
 
-  if (count >= numberOfOccurrences) return true
+      if (count >= numberOfOccurrences) return Promise.resolve(true)
 
-  return false
+      return Promise.resolve(false)
+    },
+  } as RuleValidator<string>
+}
+export const containsUpperCase = (numberOfOccurrences = 1) => {
+  return {
+    ruleName: 'contains upper case',
+    message: `The text must contain at least ${numberOfOccurrences} upper case letters`,
+    validator: (value: string) => {
+      if (!value) {
+        return Promise.resolve(false)
+      }
+
+      let count = 0
+      for (let i = 0; i < value.length; i++) {
+        if (count >= numberOfOccurrences) return Promise.resolve(true)
+        const c = value.charAt(i)
+        if (c == c.toLocaleUpperCase()) {
+          count += 1
+        }
+      }
+
+      if (count >= numberOfOccurrences) return Promise.resolve(true)
+
+      return Promise.resolve(false)
+    },
+  } as RuleValidator<string>
 }
 
-export const containsUpperCase = (value: string, numberOfOccurrences = 1) => {
-  if (!value) {
-    return false
-  }
+export const containsUpperOrLowerCase = (numberOfOccurrences = 1) => {
+  return {
+    ruleName: 'contains upper or lower case',
+    message: `The text must contain at least ${numberOfOccurrences} upper or lower case letters`,
+    validator: (value: string) => {
+      if (!value) {
+        return Promise.resolve(false)
+      }
 
-  let count = 0
-  for (let i = 0; i < value.length; i++) {
-    if (count >= numberOfOccurrences) return true
-    const c = value.charAt(i)
-    if (c == c.toLocaleUpperCase()) {
-      count += 1
-    }
-  }
+      let count = 0
+      for (let i = 0; i < value.length; i++) {
+        if (count >= numberOfOccurrences) return Promise.resolve(true)
+        const c = value.charAt(i)
+        if (c == c.toLocaleUpperCase()) {
+          count += 1
+        } else if (c == c.toLocaleUpperCase()) {
+          count += 1
+        }
+      }
 
-  if (count >= numberOfOccurrences) return true
+      if (count >= numberOfOccurrences) return Promise.resolve(true)
 
-  return false
+      return Promise.resolve(false)
+    },
+  } as RuleValidator<string>
 }
 
-export const containsUpperOrLowerCase = (value: string, numberOfOccurrences = 1) => {
-  if (!value) {
-    return false
-  }
+export const containsDigit = (numberOfOccurrences = 1) => {
+  return {
+    ruleName: 'contains digits',
+    message: `The text must contain at least ${numberOfOccurrences} numbers`,
+    validator: (value: string) => {
+      if (!value) {
+        return Promise.resolve(false)
+      }
 
-  let count = 0
-  for (let i = 0; i < value.length; i++) {
-    if (count >= numberOfOccurrences) return true
-    const c = value.charAt(i)
-    if (c == c.toLocaleUpperCase()) {
-      count += 1
-    } else if (c == c.toLocaleUpperCase()) {
-      count += 1
-    }
-  }
+      let count = 0
+      for (let i = 0; i < value.length; i++) {
+        if (count >= numberOfOccurrences) return Promise.resolve(true)
 
-  if (count >= numberOfOccurrences) return true
+        const c = value.charAt(i)
+        if (c >= '0' && c <= '9') {
+          count += 1
+        }
+      }
 
-  return false
-}
+      if (count >= numberOfOccurrences) return Promise.resolve(true)
 
-export const containsDigit = (value: string, numberOfOccurrences = 1) => {
-  if (!value) {
-    return false
-  }
-
-  let count = 0
-  for (let i = 0; i < value.length; i++) {
-    if (count >= numberOfOccurrences) return true
-
-    const c = value.charAt(i)
-    if (c >= '0' && c <= '9') {
-      count += 1
-    }
-  }
-
-  if (count >= numberOfOccurrences) return true
-
-  return false
+      return Promise.resolve(false)
+    },
+  } as RuleValidator<string>
 }
 
 export const containsSymbol = (
-  value: string,
   numberOfOccurrences: number = 1,
   symbols: string[] = [
     '~',
@@ -128,23 +149,29 @@ export const containsSymbol = (
     '/',
   ],
 ) => {
-  if (!value) {
-    return false
-  }
+  return {
+    ruleName: 'contains symbol characters',
+    message: `The text must contain at least ${numberOfOccurrences} symbol characters`,
+    validator: (value: string) => {
+      if (!value) {
+        return Promise.resolve(false)
+      }
 
-  let count = 0
-  for (let i = 0; i < value.length; i++) {
-    if (count >= numberOfOccurrences) return true
+      let count = 0
+      for (let i = 0; i < value.length; i++) {
+        if (count >= numberOfOccurrences) return Promise.resolve(true)
 
-    const c = value.charAt(i)
-    if (symbols.some(s => s === c)) {
-      count += 1
-    }
-  }
+        const c = value.charAt(i)
+        if (symbols.some(s => s === c)) {
+          count += 1
+        }
+      }
 
-  if (count >= numberOfOccurrences) return true
+      if (count >= numberOfOccurrences) return Promise.resolve(true)
 
-  return false
+      return Promise.resolve(false)
+    },
+  } as RuleValidator<string>
 }
 
 /****************************************
