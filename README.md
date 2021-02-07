@@ -1,11 +1,10 @@
 # vue-validator
 
+A validation framework for [Vue 3](https://v3.vuejs.org) inspired by [Vuelidate 2](https://github.com/vuelidate/vuelidate/tree/next), with strong typing and intellisense.
+
 **N.B.** This package is still in Alpha while I bed-down the best working architecture for its implementation.
 
-A green-fields implementation of a validator for `Vue3` in `TypeScript` that provides good `IntelliSense`.
-Inspired by [Vuelidate](https://github.com/vuelidate/vuelidate) 2.
-
-## Usage
+## Basic Usage
 
 ```ts
 import { ref } from 'vue'
@@ -156,11 +155,3 @@ The following helper functions can be useful for creating a password rule
 - containsUpperOrLowerCase
 - containsDigit
 - containsSymbol
-
-## ToDo (Possibly)
-
-- RequiredIf
-- RequiredUnless
-- And
-- Or
-- Not

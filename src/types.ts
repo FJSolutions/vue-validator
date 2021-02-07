@@ -20,25 +20,57 @@ export type GroupRules<T, G> =
 export type ValidationFunction<T> = (value: any, context?: { [key: string]: any }) => Promise<Boolean>
 
 /**
+ * Information about the context of the validation
+ */
+export interface ValidationMessageContext {
+  /**
+   * The property value that is being validated
+   */
+  readonly value: any
+  /**
+   * The name of the rule that is generating the message
+   */
+  readonly ruleName?: string
+  /**
+   * The name of the property that is being validated
+   */
+  readonly propertyName?: string
+  /**
+   * The minimum length of the string or the minimum value of the number (if set)
+   */
+  readonly min?: number
+  /**
+   * The maximum length of the string or the maximum value of the number (if set)
+   */
+  readonly max?: number
+  /**
+   * The name of the other property that the rule may be referencing
+   */
+  readonly otherPropertyName?: string
+}
+
+export type MessageFn = (ctx: ValidationMessageContext) => string
+
+/**
  * The definition of a validation rule object
  */
 export type RuleValidator<T> = {
   /**
    * The name of the validation rule
    */
-  ruleName: string
+  readonly ruleName?: string
   /**
    * The actual function that perform the validation
    */
-  validator: ValidationFunction<T>
+  readonly validator: ValidationFunction<T>
   /**
-   * The error message template for when validation fails
+   * The error message to display when a validation fails, or a function that will generate the error message
    */
-  message: string
+  readonly message: string | MessageFn
   /**
-   * Any parameters needed for the validation rule
+   * Any parameters that the validation rule uses
    */
-  params?: any[]
+  readonly params?: {}
 }
 
 /**

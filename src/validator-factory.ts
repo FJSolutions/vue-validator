@@ -8,6 +8,7 @@ import {
   IValidator,
   IPropertyValidator,
   PropertyRule,
+  ValidationMessageContext,
 } from './types'
 
 /**
@@ -183,8 +184,20 @@ const createPropertyValidator = <T extends { [key: string]: any }>(
 
       if (!(await r.rule.validator(model.value, context))) {
         isValid = false
+        let message = r.rule.message
+        if (typeof message === 'function') {
+          const ctx: ValidationMessageContext = {
+            value: model.value,
+            propertyName,
+            ruleName: r.ruleName,
+            ...r.rule.params,
+          }
+
+          message = message(ctx)
+        }
+
         errors.value.push({
-          message: r.rule.message,
+          message,
           propertyName: propertyName,
           ruleName: r.ruleName,
           toString() {

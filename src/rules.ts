@@ -197,7 +197,7 @@ export const minLength = (min: number) => {
   return {
     ruleName: 'minimum length',
     message: `The text must be at least ${min} letters long`,
-    params: [min],
+    params: { min },
     validator: value => {
       const rawValue = isRef(value) ? (value.value as string) : value
       return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length >= min)
@@ -209,7 +209,7 @@ export const maxLength = (max: number) => {
   return {
     ruleName: 'maximum length',
     message: `The text must not be longer than ${max} letters long`,
-    params: [max],
+    params: { max },
     validator: value => {
       const rawValue = isRef(value) ? (value.value as string) : value
       return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length <= max)
@@ -221,7 +221,7 @@ export const lengthBetween = (min: number, max: number) => {
   return {
     ruleName: 'length between',
     message: `The text must be between ${min} and ${max} letters long`,
-    params: [min, max],
+    params: { min, max },
     validator: value => {
       const rawValue = isRef(value) ? (value.value as string) : value
       return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length >= min && rawValue.length <= max)
@@ -238,13 +238,13 @@ export const emailAddress = {
   },
 } as RuleValidator<string | Ref<string>>
 
-export const sameAs = (propertyName: string) => {
+export const sameAs = (otherPropertyName: string) => {
   return {
     ruleName: 'same as',
-    message: `The text is not the same as ${propertyName}`,
-    params: [propertyName],
+    message: `The text is not the same as ${otherPropertyName}`,
+    params: { otherPropertyName },
     validator: (value, context) => {
-      const otherValue = unwrap(context?.[propertyName])
+      const otherValue = unwrap(context?.[otherPropertyName])
       const rawValue = unwrap(value)
       // console.log('sameAs()', rawValue, otherValue)
 
@@ -256,7 +256,6 @@ export const sameAs = (propertyName: string) => {
 export const isAlpha = {
   ruleName: 'same as',
   message: `The text contains non-alphabetic letters`,
-  params: [],
   validator: (value: string) => {
     const rawValue = String(value) || ''
 
@@ -283,7 +282,6 @@ export const isAlpha = {
 export const isAlphaNumeric = {
   ruleName: 'same as',
   message: `The text contains non-alphabetic letters`,
-  params: [],
   validator: value => {
     const rawValue = String(isRef(value) ? (value.value as string) : value) || ''
 
@@ -351,7 +349,7 @@ export const minValue = (min: number) => {
   return {
     ruleName: 'minimum value',
     message: `The number must be at least ${min}`,
-    params: [min],
+    params: { min },
     validator: value => {
       const rawValue = parseFloat(unwrap(value))
       return Promise.resolve(typeof rawValue !== 'undefined' && rawValue >= min)
@@ -363,7 +361,7 @@ export const maxValue = (max: number) => {
   return {
     ruleName: 'maximum value',
     message: `The number must be at less than ${max}`,
-    params: [max],
+    params: { max },
     validator: value => {
       const rawValue = isRef(value) ? (value.value as number) : value
       return Promise.resolve(typeof rawValue !== 'undefined' && rawValue <= max)
@@ -375,7 +373,7 @@ export const betweenValues = (min: number, max: number) => {
   return {
     ruleName: 'maximum value',
     message: `The number must be between ${min} and ${max}`,
-    params: [min, max],
+    params: { min, max },
     validator: value => {
       const rawValue = isRef(value) ? (value.value as number) : value
       return Promise.resolve(typeof rawValue !== 'undefined' && rawValue >= min && rawValue <= max)
