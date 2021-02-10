@@ -1,6 +1,6 @@
 {
   "name": "@fjsolutions/vue-validator",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "A simple validation framework for Vue 3, inspired by Vuelidate",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
