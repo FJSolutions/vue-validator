@@ -9,29 +9,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { ref, reactive, computed, watch } from 'vue';
 /**
- * Wraps making a valid Rules configuration object byt supply ig type information as type parameters to this constructor function
- *
- * @param validationDefinition An object literal that confirms to a validation configuration interface
- */
-export const useRulesConstructor = (validationDefinition) => {
-    return validationDefinition;
-};
-/**
  * Creates a validator for the supplied using the rules as a definition
  *
  * @param model The model to validate
  * @param rules The rule definitions to validate the model against
  */
-export const useValidator = (model, rules) => {
+export const useValidator = (model, rules, groupDefinition) => {
+    // Create the empty root validator object
+    const v = {};
     // Get the property structure for the model
     const descriptors = Object.getOwnPropertyDescriptors(model);
     const modelKeys = Object.keys(descriptors);
-    const v = {};
     // Create a list of Validation rules
     const validationRules = getValidationRules(modelKeys, rules);
-    // The master list of property validators
+    // Build the array of property rules
     const propertyRules = setPropertyRules(model, rules, descriptors, modelKeys);
-    // Create the list properties as validator objects
+    // Create the array of property validator objects
     const validatorProperties = propertyRules.map(pv => {
         // Get the rules for this property
         const propertyRules = validationRules.filter(r => r.propertyName === pv.propertyName);
@@ -43,8 +36,10 @@ export const useValidator = (model, rules) => {
     // Create the root validator
     createValidator(v, propertyRules, validatorProperties);
     // Create group validator
-    createGroupValidator(v, rules, modelKeys, validatorProperties);
-    // Return a strongly typed validator for this configuration
+    if (groupDefinition !== void 0) {
+        createGroupValidator(v, validatorProperties, groupDefinition);
+    }
+    // Strongly type the returned object
     return reactive(v);
 };
 /******************************************
@@ -52,23 +47,28 @@ export const useValidator = (model, rules) => {
  * Private builder methods
  *
  ******************************************/
-const createGroupValidator = (v, rules, modelKeys, validatorProperties) => {
+const createGroupValidator = (v, validatorProperties, groupDefinition) => {
     // Get the list of groups names
-    const groupKeys = Object.keys(rules).filter(rn => !modelKeys.some(mn => mn === rn));
+    // const groupKeys = Object.keys(rules).filter(rn => !modelKeys.some(mn => mn === rn))
+    const groupKeys = Object.keys(groupDefinition);
     // Loop the group names and create their group validators
-    groupKeys.forEach(gn => {
-        const groupProperties = rules[gn].map(gpn => validatorProperties.find(vp => vp._propertyName === gpn));
-        // This should be an IValidator for the selected properties
+    groupKeys.forEach(groupName => {
+        // Get the property names and their validators for this group property
+        const groupPropertyNames = Object.keys(groupDefinition[groupName]);
+        const groupProperties = validatorProperties.filter(vp => groupPropertyNames.some(gpn => gpn === vp._propertyName));
+        // This should be a Validator for the selected properties
         const gpv = createGroupPropertyValidator(groupProperties);
         groupProperties.forEach(gp => {
             Object.defineProperty(gpv, gp._propertyName, { value: gp, enumerable: true, configurable: true, writable: true });
         });
         // Add the group property with its group-validator to the root-validator
-        Object.defineProperty(v, gn, { value: gpv, enumerable: true, configurable: true, writable: true });
+        Object.defineProperty(v, groupName, { value: gpv, enumerable: true, configurable: true, writable: true });
     });
 };
+// This creates the root validator property that represents a validation group
 const createGroupPropertyValidator = (validatorProperties) => {
     const errors = ref(new Array());
+    const isPending = ref(false);
     const isInvalid = computed(() => {
         let i = 0;
         let isValid = true;
@@ -83,6 +83,7 @@ const createGroupPropertyValidator = (validatorProperties) => {
         return !isValid;
     });
     const validate = () => __awaiter(void 0, void 0, void 0, function* () {
+        isPending.value = true;
         errors.value.length = 0;
         let isValid = true;
         for (let i = 0; i < validatorProperties.length; i++) {
@@ -92,11 +93,13 @@ const createGroupPropertyValidator = (validatorProperties) => {
                 errors.value.push(...r.errors);
             }
         }
+        isPending.value = false;
         return isValid;
     });
     return reactive({
-        isInvalid,
-        errors,
+        isPending: computed(() => isPending.value),
+        isInvalid: computed(() => isInvalid.value),
+        errors: computed(() => errors.value),
         hasErrors: computed(() => errors.value && errors.value.length > 0),
         validate,
     });
@@ -122,8 +125,13 @@ const createPropertyValidator = (context, rules, propertyName) => {
             const r = rules[i];
             if (!(yield r.rule.validator(model.value, context))) {
                 isValid = false;
+                let message = r.rule.message;
+                if (typeof message === 'function') {
+                    const ctx = Object.assign({ value: model.value, propertyName, ruleName: r.ruleName }, r.rule.params);
+                    message = message(ctx);
+                }
                 errors.value.push({
-                    message: r.rule.message,
+                    message,
                     propertyName: propertyName,
                     ruleName: r.ruleName,
                     toString() {
@@ -179,6 +187,12 @@ const createValidator = (v, propertyRules, validatorProperties) => {
         }
         isPending.value = false;
         return isValid;
+    });
+    Object.defineProperty(v, 'isPending', {
+        value: isPending,
+        enumerable: true,
+        configurable: true,
+        writable: true,
     });
     Object.defineProperty(v, 'isInvalid', {
         value: isInvalid,

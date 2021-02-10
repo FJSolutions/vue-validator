@@ -1,8 +1,7 @@
 import test from 'japa'
 import { ref } from 'vue'
-import { useValidator, useRulesConstructor } from '../src/validator-factory'
-import { required } from '../src/rules'
-import { GroupRules, Rules } from '../src/types'
+import { useValidator, Rules } from '../src'
+import { required } from '../src/validators'
 
 test.group('Tests the ValidatorFactory implementation', () => {
   test('basic useValidator test', async assert => {
@@ -69,18 +68,15 @@ test.group('Tests the ValidatorFactory implementation', () => {
       age: ref(55),
       address: ref(''),
     }
-    // Rules model
-    const rules: GroupRules<typeof model, { group1: any }> = {
+    // Create the validator
+    const v = useValidator(model, {
       name: {
         required,
       },
       address: {
         required,
       },
-      group1: ['name', 'age'],
-    }
-    // Create the validator
-    const v = useValidator(model, rules)
+    })
 
     // console.log('useValidator:', v)
 
@@ -104,30 +100,29 @@ test.group('Tests the ValidatorFactory implementation', () => {
     const age = ref(55)
     const address = ref('75 Valley Road')
     const model = { name, age, address } as const
-    // Group type interface
-    interface IGroup {
-      personGroup: string[]
-      addressGroup: string[]
-    }
-    // Rules model
-    const rules = useRulesConstructor<typeof model, IGroup>({
-      name: {
-        required,
-      },
-      address: {
-        required,
-      },
-      personGroup: ['name', 'age'],
-      addressGroup: ['address'],
-    })
     // Create the validator
-    const v = useValidator(model, rules)
+    const v = useValidator(
+      model,
+      {
+        name: {
+          required,
+        },
+        address: {
+          required,
+        },
+      },
+      {
+        personGroup: { name: true, age: true },
+        addressGroup: { address: true },
+      } as const,
+    )
 
     assert.exists(v)
     // Group assertions
     assert.exists(v.personGroup)
     assert.exists(v.personGroup.name)
     assert.exists(v.personGroup.age)
+    // @ts-ignore '"address" property not present on the "personalGroup" group validator'
     assert.notExists(v.personGroup.address)
     assert.isFalse(v.personGroup.isInvalid)
     assert.isFalse(v.personGroup.name.isInvalid)

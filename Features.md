@@ -1,12 +1,5 @@
 # Vue-Validator Features
 
-## Rule Configuration
-
-- Refactor and simplify Rule configuration
-  - Remove the 'builder façade'
-  - Streamline the types
-  - Return a fully typed validator object
-
 ## Models
 
 - Investigate model options
@@ -25,8 +18,12 @@
 
 ## Built-In Validators
 
-- RequiredIf
-- RequiredUnless
-- And
-- Or
-- Not
+- Collection validators
+  - minLength
+  - notEmpty
+- RequiredIf (option for exact equals === (default), or truthy equals ==)
+- RequiredUnless (option for exact equals === (default), or truthy equals ==)
+- Combinator Rules
+  - And
+  - Or
+  - Not

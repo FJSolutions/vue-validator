@@ -1,18 +1,12 @@
 /**
  * The type definition of an object that defines the validation riles for a type
  */
-export type Rules<T> = { [Key in keyof T]?: { [key: string]: RuleValidator<T[Key]> } }
-
-/**
- * The type definition of a group of validation rules for a type
- */
-export type GroupRules<T, G> =
-  | {
-      [Key in keyof T]?: { [validatorName: string]: RuleValidator<T[Key]> }
-    }
-  | {
-      [Key in keyof G]: (keyof T)[]
-    }
+export type Rules<T> = {
+  // A validation rule has the name of a property from the model, and an object containing validation rule definitions
+  [Key in keyof T]?: {
+    readonly [key: string]: RuleValidator<T[Key]>
+  }
+}
 
 /**
  * The signature of a validation function: `async` function that takes a value and validates it
@@ -108,9 +102,33 @@ export type PropertyRule<T> = {
  *******************************************/
 
 /**
- * The interface for the root validator
+ * The internal interface for a validator object
  */
-export interface IValidator {
+export interface IPropertyValidator<T> extends Validator {
+  /**
+   * The name of the property that this validator is for
+   */
+  _propertyName: string
+  /**
+   * Gets a value indicating if the validator has had its model value set
+   */
+  readonly isDirty: boolean
+  /**
+   * The model object that is being validated
+   */
+  model: T
+}
+
+/**************************************************************************
+ *
+ * New Types
+ *
+ **************************************************************************/
+
+/**
+ * The public interface for a model or group validator
+ */
+export interface Validator {
   /**
    * Gets a value indicating if the validator is in an invalid state after the last validation
    */
@@ -124,6 +142,10 @@ export interface IValidator {
    */
   readonly hasErrors: boolean
   /**
+   * Gets a value indicating whether there are still pending validations
+   */
+  readonly isPending: boolean
+  /**
    * Trigger a validation
    *
    * @returns (async) true, if validation succeeds
@@ -134,7 +156,7 @@ export interface IValidator {
 /**
  * The public interface of a validator object
  */
-export interface IPropertyValidator<T> extends IValidator {
+export interface PropertyValidator<T> extends Validator {
   /**
    * Gets a value indicating if the validator has had its model value set
    */

@@ -3,18 +3,8 @@
  */
 export declare type Rules<T> = {
     [Key in keyof T]?: {
-        [key: string]: RuleValidator<T[Key]>;
+        readonly [key: string]: RuleValidator<T[Key]>;
     };
-};
-/**
- * The type definition of a group of validation rules for a type
- */
-export declare type GroupRules<T, G> = {
-    [Key in keyof T]?: {
-        [validatorName: string]: RuleValidator<T[Key]>;
-    };
-} | {
-    [Key in keyof G]: (keyof T)[];
 };
 /**
  * The signature of a validation function: `async` function that takes a value and validates it
@@ -23,25 +13,55 @@ export declare type ValidationFunction<T> = (value: any, context?: {
     [key: string]: any;
 }) => Promise<Boolean>;
 /**
+ * Information about the context of the validation
+ */
+export interface ValidationMessageContext {
+    /**
+     * The property value that is being validated
+     */
+    readonly value: any;
+    /**
+     * The name of the rule that is generating the message
+     */
+    readonly ruleName?: string;
+    /**
+     * The name of the property that is being validated
+     */
+    readonly propertyName?: string;
+    /**
+     * The minimum length of the string or the minimum value of the number (if set)
+     */
+    readonly min?: number;
+    /**
+     * The maximum length of the string or the maximum value of the number (if set)
+     */
+    readonly max?: number;
+    /**
+     * The name of the other property that the rule may be referencing
+     */
+    readonly otherPropertyName?: string;
+}
+export declare type MessageFn = (ctx: ValidationMessageContext) => string;
+/**
  * The definition of a validation rule object
  */
 export declare type RuleValidator<T> = {
     /**
      * The name of the validation rule
      */
-    ruleName: string;
+    readonly ruleName?: string;
     /**
      * The actual function that perform the validation
      */
-    validator: ValidationFunction<T>;
+    readonly validator: ValidationFunction<T>;
     /**
-     * The error message template for when validation fails
+     * The error message to display when a validation fails, or a function that will generate the error message
      */
-    message: string;
+    readonly message: string | MessageFn;
     /**
-     * Any parameters needed for the validation rule
+     * Any parameters that the validation rule uses
      */
-    params?: any[];
+    readonly params?: {};
 };
 /**
  * Represents a validation error
@@ -76,9 +96,31 @@ export declare type PropertyRule<T> = {
  *
  *******************************************/
 /**
- * The interface for the root validator
+ * The internal interface for a validator object
  */
-export interface IValidator {
+export interface IPropertyValidator<T> extends Validator {
+    /**
+     * The name of the property that this validator is for
+     */
+    _propertyName: string;
+    /**
+     * Gets a value indicating if the validator has had its model value set
+     */
+    readonly isDirty: boolean;
+    /**
+     * The model object that is being validated
+     */
+    model: T;
+}
+/**************************************************************************
+ *
+ * New Types
+ *
+ **************************************************************************/
+/**
+ * The public interface for a model or group validator
+ */
+export interface Validator {
     /**
      * Gets a value indicating if the validator is in an invalid state after the last validation
      */
@@ -92,6 +134,10 @@ export interface IValidator {
      */
     readonly hasErrors: boolean;
     /**
+     * Gets a value indicating whether there are still pending validations
+     */
+    readonly isPending: boolean;
+    /**
      * Trigger a validation
      *
      * @returns (async) true, if validation succeeds
@@ -101,7 +147,7 @@ export interface IValidator {
 /**
  * The public interface of a validator object
  */
-export interface IPropertyValidator<T> extends IValidator {
+export interface PropertyValidator<T> extends Validator {
     /**
      * Gets a value indicating if the validator has had its model value set
      */

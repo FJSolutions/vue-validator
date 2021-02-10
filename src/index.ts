@@ -1,23 +1,2 @@
-export type { RuleValidator, ValidationRule, Rules, GroupRules } from './types'
-export { useValidator, useRulesConstructor } from './validator-factory'
-export {
-  betweenValues,
-  containsDigit,
-  containsLowerCase,
-  containsSymbol,
-  containsUpperCase,
-  containsUpperOrLowerCase,
-  decimal,
-  emailAddress,
-  integer,
-  isAlpha,
-  isAlphaNumeric,
-  lengthBetween,
-  maxLength,
-  maxValue,
-  minLength,
-  minValue,
-  numeric,
-  required,
-  sameAs,
-} from './rules'
+export type { RuleValidator, ValidationRule, Rules } from './types'
+export { useValidator } from './validator-builder'

@@ -1,4 +1,4 @@
-import { Ref, isRef } from 'vue'
+import { isRef } from 'vue'
 import { unwrap } from './helpers'
 import { RuleValidator } from './types'
 
@@ -191,7 +191,7 @@ export const required = {
     const rawValue = isRef(value) ? (value.value as string) : value
     return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length > 0)
   },
-} as RuleValidator<string | Ref<string>>
+} as RuleValidator<string>
 
 export const minLength = (min: number) => {
   return {
@@ -202,7 +202,7 @@ export const minLength = (min: number) => {
       const rawValue = isRef(value) ? (value.value as string) : value
       return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length >= min)
     },
-  } as RuleValidator<string | Ref<string>>
+  } as RuleValidator<string>
 }
 
 export const maxLength = (max: number) => {
@@ -214,7 +214,7 @@ export const maxLength = (max: number) => {
       const rawValue = isRef(value) ? (value.value as string) : value
       return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length <= max)
     },
-  } as RuleValidator<string | Ref<string>>
+  } as RuleValidator<string>
 }
 
 export const lengthBetween = (min: number, max: number) => {
@@ -226,7 +226,7 @@ export const lengthBetween = (min: number, max: number) => {
       const rawValue = isRef(value) ? (value.value as string) : value
       return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length >= min && rawValue.length <= max)
     },
-  } as RuleValidator<string | Ref<string>>
+  } as RuleValidator<string>
 }
 
 export const emailAddress = {
@@ -236,7 +236,7 @@ export const emailAddress = {
     const rawValue = isRef(value) ? (value.value as string) : value
     return Promise.resolve(emailRegex.test(rawValue))
   },
-} as RuleValidator<string | Ref<string>>
+} as RuleValidator<string>
 
 export const sameAs = (otherPropertyName: string) => {
   return {
@@ -250,7 +250,7 @@ export const sameAs = (otherPropertyName: string) => {
 
       return Promise.resolve(rawValue === otherValue)
     },
-  } as RuleValidator<string | Ref<string>>
+  } as RuleValidator<string>
 }
 
 export const isAlpha = {
@@ -277,7 +277,7 @@ export const isAlpha = {
 
     return Promise.resolve(isValid)
   },
-} as RuleValidator<string | Ref<string>>
+} as RuleValidator<string>
 
 export const isAlphaNumeric = {
   ruleName: 'same as',
@@ -305,7 +305,7 @@ export const isAlphaNumeric = {
 
     return Promise.resolve(isValid)
   },
-} as RuleValidator<string | Ref<string>>
+} as RuleValidator<string>
 
 /***************************************************
  *
@@ -325,7 +325,7 @@ export const integer = {
 
     return Promise.resolve(intRegex.test(rawValue))
   },
-} as RuleValidator<number | Ref<number>>
+} as RuleValidator<number>
 
 export const decimal = {
   ruleName: 'decimal number',
@@ -334,7 +334,7 @@ export const decimal = {
     const rawValue = String(unwrap(value))
     return Promise.resolve(decimalRegex.test(rawValue))
   },
-} as RuleValidator<number | Ref<number>>
+} as RuleValidator<number>
 
 export const numeric = {
   ruleName: 'numeric',
@@ -343,7 +343,7 @@ export const numeric = {
     const rawValue = String(unwrap(value))
     return Promise.resolve(numericRegex.test(rawValue))
   },
-} as RuleValidator<number | Ref<number>>
+} as RuleValidator<number>
 
 export const minValue = (min: number) => {
   return {
@@ -354,7 +354,7 @@ export const minValue = (min: number) => {
       const rawValue = parseFloat(unwrap(value))
       return Promise.resolve(typeof rawValue !== 'undefined' && rawValue >= min)
     },
-  } as RuleValidator<number | Ref<number>>
+  } as RuleValidator<number>
 }
 
 export const maxValue = (max: number) => {
@@ -366,7 +366,7 @@ export const maxValue = (max: number) => {
       const rawValue = isRef(value) ? (value.value as number) : value
       return Promise.resolve(typeof rawValue !== 'undefined' && rawValue <= max)
     },
-  } as RuleValidator<number | Ref<number>>
+  } as RuleValidator<number>
 }
 
 export const betweenValues = (min: number, max: number) => {
@@ -378,5 +378,5 @@ export const betweenValues = (min: number, max: number) => {
       const rawValue = isRef(value) ? (value.value as number) : value
       return Promise.resolve(typeof rawValue !== 'undefined' && rawValue >= min && rawValue <= max)
     },
-  } as RuleValidator<number | Ref<number>>
+  } as RuleValidator<number>
 }
