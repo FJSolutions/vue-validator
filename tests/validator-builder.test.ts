@@ -1,7 +1,6 @@
 import test from 'japa'
 import { ref } from 'vue'
-import { useValidator, Rules } from '../src'
-import { required } from '../src/validators'
+import { useValidator, Rules, required } from '../src'
 
 test.group('Tests the ValidatorFactory implementation', () => {
   test('basic useValidator test', async assert => {

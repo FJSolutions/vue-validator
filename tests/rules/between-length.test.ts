@@ -1,7 +1,6 @@
 import test from 'japa'
 import { ref } from 'vue'
-import { useValidator, Rules } from '../../src'
-import { lengthBetween } from '../../src/rules'
+import { useValidator, Rules, lengthBetween } from '../../src'
 
 test.group('Tests for the built-in "maxLength" validator', () => {
   test('success test', async assert => {
