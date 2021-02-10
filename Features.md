@@ -21,8 +21,8 @@
 - Collection validators
   - minLength
   - notEmpty
-- RequiredIf (option for exact equals === (default), or truthy equals ==)
-- RequiredUnless (option for exact equals === (default), or truthy equals ==)
+- RequiredIf (option for reference equality === (default), or truthy equals ==)
+- RequiredUnless (option for reference equality === (default), or truthy equals ==)
 - Combinator Rules
   - And
   - Or
