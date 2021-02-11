@@ -188,8 +188,17 @@ export const required = {
   ruleName: 'required',
   message: 'Some text is required',
   validator: value => {
-    const rawValue = isRef(value) ? (value.value as string) : value
-    return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length > 0)
+    const rawValue = isRef(value) ? value.value : value
+    const isValid = () => {
+      if (rawValue === void 0 || rawValue === null) {
+        return false
+      } else if (typeof rawValue === 'string') {
+        return rawValue.length > 0
+      }
+
+      return false
+    }
+    return Promise.resolve(isValid())
   },
 } as RuleValidator<string>
 
@@ -200,7 +209,7 @@ export const minLength = (min: number) => {
     params: { min },
     validator: value => {
       const rawValue = isRef(value) ? (value.value as string) : value
-      return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length >= min)
+      return Promise.resolve(rawValue !== void 0 && rawValue.length >= min)
     },
   } as RuleValidator<string>
 }
@@ -212,7 +221,7 @@ export const maxLength = (max: number) => {
     params: { max },
     validator: value => {
       const rawValue = isRef(value) ? (value.value as string) : value
-      return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length <= max)
+      return Promise.resolve(rawValue !== void 0 && rawValue.length <= max)
     },
   } as RuleValidator<string>
 }
@@ -224,7 +233,8 @@ export const lengthBetween = (min: number, max: number) => {
     params: { min, max },
     validator: value => {
       const rawValue = isRef(value) ? (value.value as string) : value
-      return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length >= min && rawValue.length <= max)
+
+      return Promise.resolve(rawValue !== void 0 && rawValue.length >= min && rawValue.length <= max)
     },
   } as RuleValidator<string>
 }
@@ -352,7 +362,7 @@ export const minValue = (min: number) => {
     params: { min },
     validator: value => {
       const rawValue = parseFloat(unwrap(value))
-      return Promise.resolve(typeof rawValue !== 'undefined' && rawValue >= min)
+      return Promise.resolve(rawValue !== void 0 && rawValue >= min)
     },
   } as RuleValidator<number>
 }
@@ -364,7 +374,7 @@ export const maxValue = (max: number) => {
     params: { max },
     validator: value => {
       const rawValue = isRef(value) ? (value.value as number) : value
-      return Promise.resolve(typeof rawValue !== 'undefined' && rawValue <= max)
+      return Promise.resolve(rawValue !== void 0 && rawValue <= max)
     },
   } as RuleValidator<number>
 }
@@ -376,7 +386,7 @@ export const betweenValues = (min: number, max: number) => {
     params: { min, max },
     validator: value => {
       const rawValue = isRef(value) ? (value.value as number) : value
-      return Promise.resolve(typeof rawValue !== 'undefined' && rawValue >= min && rawValue <= max)
+      return Promise.resolve(rawValue !== void 0 && rawValue >= min && rawValue <= max)
     },
   } as RuleValidator<number>
 }

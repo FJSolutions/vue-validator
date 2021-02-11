@@ -8,8 +8,7 @@ A validation framework for [Vue 3](https://v3.vuejs.org) inspired by [Vuelidate 
 
 ```ts
 import { ref } from 'vue'
-import { useValidator } from '@fjsolutions/vue-validator'
-import { required, minLength } from '@fjsolutions/vue-validator/validators'
+import { useValidator, required, minLength } from '@fjsolutions/vue-validator'
 
 // Object model
 const model = {
