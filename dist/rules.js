@@ -170,7 +170,16 @@ export const required = {
     message: 'Some text is required',
     validator: value => {
         const rawValue = isRef(value) ? value.value : value;
-        return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length > 0);
+        const isValid = () => {
+            if (rawValue === void 0 || rawValue === null) {
+                return false;
+            }
+            else if (typeof rawValue === 'string') {
+                return rawValue.length > 0;
+            }
+            return false;
+        };
+        return Promise.resolve(isValid());
     },
 };
 export const minLength = (min) => {
@@ -180,7 +189,7 @@ export const minLength = (min) => {
         params: { min },
         validator: value => {
             const rawValue = isRef(value) ? value.value : value;
-            return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length >= min);
+            return Promise.resolve(rawValue !== void 0 && rawValue.length >= min);
         },
     };
 };
@@ -191,7 +200,7 @@ export const maxLength = (max) => {
         params: { max },
         validator: value => {
             const rawValue = isRef(value) ? value.value : value;
-            return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length <= max);
+            return Promise.resolve(rawValue !== void 0 && rawValue.length <= max);
         },
     };
 };
@@ -202,7 +211,7 @@ export const lengthBetween = (min, max) => {
         params: { min, max },
         validator: value => {
             const rawValue = isRef(value) ? value.value : value;
-            return Promise.resolve(typeof rawValue !== 'undefined' && rawValue.length >= min && rawValue.length <= max);
+            return Promise.resolve(rawValue !== void 0 && rawValue.length >= min && rawValue.length <= max);
         },
     };
 };
@@ -311,7 +320,7 @@ export const minValue = (min) => {
         params: { min },
         validator: value => {
             const rawValue = parseFloat(unwrap(value));
-            return Promise.resolve(typeof rawValue !== 'undefined' && rawValue >= min);
+            return Promise.resolve(rawValue !== void 0 && rawValue >= min);
         },
     };
 };
@@ -322,7 +331,7 @@ export const maxValue = (max) => {
         params: { max },
         validator: value => {
             const rawValue = isRef(value) ? value.value : value;
-            return Promise.resolve(typeof rawValue !== 'undefined' && rawValue <= max);
+            return Promise.resolve(rawValue !== void 0 && rawValue <= max);
         },
     };
 };
@@ -333,7 +342,7 @@ export const betweenValues = (min, max) => {
         params: { min, max },
         validator: value => {
             const rawValue = isRef(value) ? value.value : value;
-            return Promise.resolve(typeof rawValue !== 'undefined' && rawValue >= min && rawValue <= max);
+            return Promise.resolve(rawValue !== void 0 && rawValue >= min && rawValue <= max);
         },
     };
 };
