@@ -169,17 +169,23 @@ export const required = {
     ruleName: 'required',
     message: 'Some text is required',
     validator: value => {
-        const rawValue = isRef(value) ? value.value : value;
-        const isValid = () => {
-            if (rawValue === void 0 || rawValue === null) {
+        const isValid = (value) => {
+            if (value === void 0 || value === null) {
+                // If it is null of undefined it is invalid
                 return false;
             }
-            else if (typeof rawValue === 'string') {
-                return rawValue.length > 0;
+            else if (typeof value === 'object') {
+                // If it is a non-null object then it is valid
+                return true;
+            }
+            else if (typeof value === 'string') {
+                // If it is a string then it must be longer than 0
+                return value.length > 0;
             }
             return false;
         };
-        return Promise.resolve(isValid());
+        const rawValue = isRef(value) ? value.value : value;
+        return Promise.resolve(isValid(rawValue));
     },
 };
 export const minLength = (min) => {

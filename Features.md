@@ -15,12 +15,15 @@
   - Model section
   - Rule section section
   - Groups
+- Investigate [GitBook](https://www.gitbook.com/pricing) for hosting documentation
 
 ## Built-In Validators
 
+- Object validator
+  - exists (not `null` of `undefined`)
 - Collection validators
-  - minLength
   - notEmpty
+  - minLength
 - RequiredIf (option for reference equality === (default), or truthy equals ==)
 - RequiredUnless (option for reference equality === (default), or truthy equals ==)
 - Combinator Rules

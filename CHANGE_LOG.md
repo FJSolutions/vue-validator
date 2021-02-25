@@ -1,6 +1,8 @@
 # Change Log
 
-- Alpha releases (working version, but API still evolving)
+## 0.6.1
+
+- Fixed bug with the `required` validator on objects
 
 ## 0.6.0
 
